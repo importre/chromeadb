@@ -1,0 +1,53 @@
+html {
+    overflow-y: auto;
+}
+
+body {
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+
+.tab-pane input {
+    margin-bottom: 10px;
+}
+
+.tab-content {
+    margin-top: 10px;
+}
+
+.tab-pane .btn {
+    width: 80px;
+}
+
+.badge {
+    background-color: #d9544f;
+}
+
+tr>td.active {
+    font-weight: bold;
+}
+
+.navbar-bottom-brand {
+    float: left;
+    padding: 15px 15px;
+    font-size: 13px;
+    line-height: 20px;
+    color: #999999;
+}
+
+.navbar-bottom-brand:hover,
+.navbar-bottom-brand:focus {
+    text-decoration: none;
+    color: #ffffff;
+    background-color: transparent;
+}
+
+th {
+    text-align: center;
+}
+
+/*
+table {
+    -webkit-user-select: text;
+}
+*/

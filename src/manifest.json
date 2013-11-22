@@ -1,0 +1,22 @@
+{
+    "name": "Chrome ADB",
+    "description": "Chrome ADB(Android Debug Bridge) Client",
+    "manifest_version": 2,
+    "version": "0.1.0",
+    "permissions": [
+        {
+            "socket": ["tcp-connect"]
+        }
+    ],
+    "minimum_chrome_version": "24",
+    "app": {
+        "background": {
+            "scripts": ["scripts/background.js"]
+        }
+    },
+    "icons": {
+        "16": "assets/icon_016.png",
+        "48": "assets/icon_048.png",
+        "128": "assets/icon_128.png"
+    }
+}
