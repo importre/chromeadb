@@ -47,6 +47,13 @@ No description needed anymore :)
 
 
 
+Chrome Store
+------------
+
+[![chrome_store](https://developers.google.com/chrome/web-store/images/branding/ChromeWebStore_Badge_v2_340x96.png)][2]
+
+
+
 License
 -------
 
@@ -57,3 +64,4 @@ BSD 2-Clause. See the `LICENSE` file.
 
 [0]: http://www.nodejs.org/ "node.js"
 [1]: http://developer.android.com/sdk/index.html "android sdk"
+[2]: https://chrome.google.com/webstore/detail/chrome-adb/fhdoijgfljahinnpbolfdimpcfoicmnm "chrome store"
