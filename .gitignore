@@ -1,0 +1,9 @@
+src/bower_components/
+dist/
+node_modules/
+package/
+.idea/
+*.iml
+.*.swp
+.swp
+.DS_Store
