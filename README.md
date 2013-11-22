@@ -6,6 +6,8 @@ ChromeADB
 When launched, you can see all devices connected to your machine if the ADB connection is successful.  
 Click a device that you want to control or monitor. And enjoy!
 
+![screenshot](https://lh3.googleusercontent.com/-YZShQkbkFCQ/Uo-kcYDhn2I/AAAAAAAAFPo/G2aeDR4jLZY/w792-h532-no/chromeadb.png)
+
 
 
 How to install
