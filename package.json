@@ -1,6 +1,6 @@
 {
     "name": "ChromeADB",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Chrome ADB(Android Debug Bridge) Client",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
