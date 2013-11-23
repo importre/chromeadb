@@ -15,7 +15,7 @@ How to install
 
 - Install [node.js][0]
 - `$ npm install -g bower`
-- `$ bower install angular bootstrap`
+- `$ bower install`
 - Open `chrome://extensions` in your Chrome.
 - Check `Developer mode`
 - Select `Load unpacked extensions...`
