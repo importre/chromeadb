@@ -161,6 +161,7 @@ adb.controller("controller", function ($scope, socketService) {
                 return socketService.read(param.createInfo, 4);
             })
             .catch(function (param) {
+                $scope.initVariables();
                 $scope.logMessage = {
                     cmd: "Connection Error",
                     res: "run \"$ adb start-server\""
@@ -192,6 +193,7 @@ adb.controller("controller", function ($scope, socketService) {
                 }
             })
             .catch(function (param) {
+                $scope.initVariables();
                 $scope.logMessage = {
                     cmd: "Connection Error",
                     res: "Cannot find any devices"
