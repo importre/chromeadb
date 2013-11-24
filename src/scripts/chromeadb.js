@@ -58,6 +58,7 @@ adb.factory("socketService", ["$rootScope", "$q", function ($rootScope, $q) {
                     });
                 } else {
                     console.log("write error:", arrayBuffer);
+                    defer.reject(writeInfo);
                 }
             });
         });
@@ -80,6 +81,8 @@ adb.factory("socketService", ["$rootScope", "$q", function ($rootScope, $q) {
                         defer.resolve(param);
                     });
                 });
+            } else {
+                defer.reject(readInfo);
             }
         });
 
@@ -157,7 +160,7 @@ adb.controller("controller", function ($scope, socketService) {
             .then(function (param) {
                 return socketService.read(param.createInfo, 4);
             })
-            .catch(function (reason) {
+            .catch(function (param) {
                 $scope.logMessage = {
                     cmd: "Connection Error",
                     res: "run \"$ adb start-server\""
@@ -187,6 +190,12 @@ adb.controller("controller", function ($scope, socketService) {
                 if (param.data == "OKAY") {
                     return socketService.readAll(param.createInfo, arrayBufferToString);
                 }
+            })
+            .catch(function (param) {
+                $scope.logMessage = {
+                    cmd: "Connection Error",
+                    res: "Cannot find any devices"
+                };
             });
     }
 
@@ -237,7 +246,7 @@ adb.controller("controller", function ($scope, socketService) {
         $scope.devInfo = $scope.deviceInfoList[serial];
         $scope.loadPackages(serial);
         $scope.loadProcessList(serial);
-        $scope.loadMemInfo(serial);
+        $scope.loadMemInfo(serial, null);
         $scope.loadDiskSpace(serial);
 
         // show packages tab
@@ -301,7 +310,7 @@ adb.controller("controller", function ($scope, socketService) {
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 $scope.logMessage.res = param.data.trim();
-            })
+            });
     }
 
     /**
