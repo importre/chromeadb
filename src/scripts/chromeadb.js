@@ -107,7 +107,7 @@ adb.factory("socketService", ["$rootScope", "$q", function ($rootScope, $q) {
                             data: data
                         }
                         defer.resolve(param);
-                    })
+                    });
                 }
             });
         })();
@@ -251,7 +251,7 @@ adb.controller("controller", function ($scope, socketService) {
 
         // show packages tab
         $(function () {
-            $('#mytab a:first').tab('show')
+            $('#mytab a:first').tab('show');
         });
     }
 
