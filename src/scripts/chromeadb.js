@@ -86,16 +86,16 @@ adb.factory("socketService", ["$rootScope", "$q", function ($rootScope, $q) {
         return defer.promise;
     }
 
-    function readAll(createInfo, buffSize, interval, stringConverter) {
+    function readAll(createInfo, stringConverter) {
         var defer = $q.defer();
         var data = "";
 
-        var intervalId = window.setInterval(function () {
-            chrome.socket.read(createInfo.socketId, buffSize, function (readInfo) {
-                // console.log(readInfo);
+        (function readAllData() {
+            chrome.socket.read(createInfo.socketId, 1024, function (readInfo) {
                 if (readInfo.resultCode > 0) {
                     stringConverter(readInfo.data, function (str) {
                         data += str;
+                        readAllData();
                     });
                 } else {
                     $rootScope.$apply(function () {
@@ -103,12 +103,11 @@ adb.factory("socketService", ["$rootScope", "$q", function ($rootScope, $q) {
                             createInfo: createInfo,
                             data: data
                         }
-                        window.clearInterval(intervalId);
                         defer.resolve(param);
                     })
                 }
             });
-        }, interval);
+        })();
 
         return defer.promise;
     }
@@ -175,7 +174,7 @@ adb.controller("controller", function ($scope, socketService) {
             });
     }
 
-    $scope.getReadAllPromise = function (cmd1, cmd2, buffSize, interval) {
+    $scope.getReadAllPromise = function (cmd1, cmd2) {
         return $scope.getNewCommandPromise(cmd1)
             .then(function (param) {
                 // console.log(param);
@@ -186,7 +185,7 @@ adb.controller("controller", function ($scope, socketService) {
             .then(function (param) {
                 // console.log(param);
                 if (param.data == "OKAY") {
-                    return socketService.readAll(param.createInfo, buffSize, interval, arrayBufferToString);
+                    return socketService.readAll(param.createInfo, arrayBufferToString);
                 }
             });
     }
@@ -241,9 +240,6 @@ adb.controller("controller", function ($scope, socketService) {
         $scope.loadMemInfo(serial);
         $scope.loadDiskSpace(serial);
 
-        window.setInterval(function () {
-        }, 3000);
-
         // show packages tab
         $(function () {
             $('#mytab a:first').tab('show')
@@ -260,10 +256,8 @@ adb.controller("controller", function ($scope, socketService) {
     $scope.loadPackages = function (serial) {
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "shell:pm list package";
-        var buffSize = 4096 << 1;
-        var interval = 500;
 
-        $scope.getReadAllPromise(cmd1, cmd2, buffSize, interval)
+        $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 $scope.packages = parsePackageList(param.data);
             });
@@ -280,10 +274,8 @@ adb.controller("controller", function ($scope, socketService) {
     $scope.onClickButton = function (serial, keyCode) {
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "shell:input keyevent " + keyCode;
-        var buffSize = 4096 << 1;
-        var interval = 500;
 
-        $scope.getReadAllPromise(cmd1, cmd2, buffSize, interval)
+        $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 // do nothing...
             });
@@ -300,15 +292,13 @@ adb.controller("controller", function ($scope, socketService) {
     $scope.clearData = function (serial, packageName) {
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "shell:pm clear " + packageName;
-        var buffSize = 4096 << 1;
-        var interval = 500;
 
         $scope.logMessage = {
             cmd: "Clear Data",
             res: null
         };
 
-        $scope.getReadAllPromise(cmd1, cmd2, buffSize, interval)
+        $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 $scope.logMessage.res = param.data.trim();
             })
@@ -325,15 +315,13 @@ adb.controller("controller", function ($scope, socketService) {
     $scope.uninstallPackage = function (serial, packageName) {
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "shell:pm uninstall " + packageName;
-        var buffSize = 4096 << 1;
-        var interval = 500;
 
         $scope.logMessage = {
             cmd: "Uninstall",
             res: null
         };
 
-        $scope.getReadAllPromise(cmd1, cmd2, buffSize, interval)
+        $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 $scope.logMessage.res = param.data.trim();
                 if ($scope.logMessage.res.length == 0) {
@@ -345,8 +333,6 @@ adb.controller("controller", function ($scope, socketService) {
     $scope.stopPackage = function (serial, packageName) {
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "shell:am force-stop " + packageName;
-        var buffSize = 4096 << 1;
-        var interval = 500;
 
         $scope.logMessage = {
             cmd: "Force-stop",
@@ -354,7 +340,7 @@ adb.controller("controller", function ($scope, socketService) {
         };
 
         console.log(serial, packageName);
-        $scope.getReadAllPromise(cmd1, cmd2, buffSize, interval)
+        $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 console.log(serial, packageName);
             });
@@ -371,10 +357,8 @@ adb.controller("controller", function ($scope, socketService) {
     $scope.sendText = function (serial, text) {
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "shell:input text " + text;
-        var buffSize = 4096 << 1;
-        var interval = 500;
 
-        $scope.getReadAllPromise(cmd1, cmd2, buffSize, interval)
+        $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 // console.log(param);
                 $scope.text = null;
@@ -391,10 +375,8 @@ adb.controller("controller", function ($scope, socketService) {
     $scope.loadProcessList = function (serial) {
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "shell:ps";
-        var buffSize = 4096 << 1;
-        var interval = 500;
 
-        $scope.getReadAllPromise(cmd1, cmd2, buffSize, interval)
+        $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 var lines = parseProcessList(param.data);
                 var body = lines.splice(1);
@@ -417,8 +399,6 @@ adb.controller("controller", function ($scope, socketService) {
     $scope.loadMemInfo = function (serial, procName) {
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "shell:dumpsys meminfo";
-        var buffSize = 4096 << 1;
-        var interval = 1200;
 
         if (procName) {
             cmd2 += (" " + procName);
@@ -429,7 +409,7 @@ adb.controller("controller", function ($scope, socketService) {
             data: null
         };
 
-        $scope.getReadAllPromise(cmd1, cmd2, buffSize, interval)
+        $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 if (!procName) {
                     var data = parseMemInfo(param.data);
@@ -452,10 +432,8 @@ adb.controller("controller", function ($scope, socketService) {
     $scope.loadDiskSpace = function (serial) {
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "shell:df";
-        var buffSize = 4096 << 1;
-        var interval = 500;
 
-        $scope.getReadAllPromise(cmd1, cmd2, buffSize, interval)
+        $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 $scope.diskSpace = parseDiskSpace(param.data);
             });
