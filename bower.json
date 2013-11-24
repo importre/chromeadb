@@ -1,6 +1,6 @@
 {
   "name": "ChromeADB",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/importre/chromeadb",
   "description": "Chrome ADB(Android Debug Bridge) Client",
   "authors": [
