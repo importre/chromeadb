@@ -433,7 +433,6 @@ adb.controller("controller", function ($scope, socketService) {
                     var data = parsePackageMemInfo(param.data);
                     $scope.procMemInfo.procName = procName;
                     $scope.procMemInfo.data = data;
-                    $.jqplot ('heap_chart', [[0, data.size], [0, data.alloc], [0, data.free]]);
                 }
             });
     }
