@@ -418,11 +418,10 @@
         <tbody>
         <tr ng-repeat="info in memInfo | filter:meminfoQuery">
             <td>
-                <!--<a href="#"-->
-                <!--data-toggle="modal" data-target="#procMemInfoModal"-->
-                <!--ng-click="loadMemInfo(devInfo.serial, info.process);">-->
-                {{ info.process }}
-                <!--</a>-->
+                <a href="#" data-toggle="modal" data-target="#procMemInfoModal"
+                   ng-click="loadHeapInfoOfApp(devInfo.serial, info.process);">
+                    {{ info.process }}
+                </a>
             </td>
             <td class="text-right">{{ info.pid }}</td>
             <td class="text-right">{{ info.kb }}</td>
@@ -485,7 +484,7 @@
             <div class="modal-body">
                 <div class="panel panel-primary" ng-repeat="memInfo in procMemInfo.data">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{{memInfo.area.toUpperCase();}} Heap</h3>
+                        <h3 class="panel-title">{{ memInfo.area.toUpperCase(); }} Heap</h3>
                     </div>
                     <div class="panel-body">
                         <table class="table table-condensed table-hover">

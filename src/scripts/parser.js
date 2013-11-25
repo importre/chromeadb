@@ -150,27 +150,40 @@ function parseMemInfo(data) {
 }
 
 function parsePackageMemInfo(data) {
-    // \1: Native | Dalvik
-    // \2: size
-    // \3: alloc
-    // \4: free
-    var re = new RegExp(/^(Native|Dalvik)(?:\s+\d+)(?:\s+\d+)(?:\s+\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
     var lines = data.trim().split("\n");
-    var line;
+    var line, tempLine, length;
     var ret = [];
     var cnt = 0;
+    var found = false;
+    var idxOfSize, idxOfAlloc, idxOfFree;
 
     for (var i in lines) {
         line = lines[i].trim();
-        line = re.exec(line);
-        if (line) {
-            cnt++;
+        tempLine = line.split(/\s+/);
+        length = tempLine.length;
+
+        if (!found) {
+            idxOfSize = tempLine.indexOf("Size");
+            idxOfAlloc = tempLine.indexOf("Alloc");
+            idxOfFree = tempLine.indexOf("Free");
+
+            if (idxOfSize >= 0 && idxOfAlloc >= 0 && idxOfFree >= 0) {
+                idxOfSize = length - idxOfSize;
+                idxOfAlloc = length - idxOfAlloc;
+                idxOfFree = length - idxOfFree;
+                found = true;
+                continue;
+            }
+        }
+
+        if (found && (tempLine[0] == "Native" || tempLine[1] == "Dalvik")) {
             ret.push({
-                area: line[1],
-                size: line[2],
-                alloc: line[3],
-                free: line[4]
+                area: tempLine[0],
+                size: tempLine[length - idxOfSize],
+                alloc: tempLine[length - idxOfAlloc],
+                free: tempLine[length - idxOfFree]
             });
+            cnt++;
         }
 
         if (cnt >= 2) {

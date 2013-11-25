@@ -135,6 +135,14 @@ adb.controller("controller", function ($scope, socketService) {
         $scope.initDeviceData();
     }
 
+    $scope.clearIntervalOfHeapInfo = function () {
+        var intervalId = $scope.intervalIdOfHeapInfo;
+        if (intervalId) {
+            window.clearInterval(intervalId);
+            $scope.intervalIdOfHeapInfo = null;
+        }
+    }
+
     $scope.initDeviceData = function () {
         $scope.packages = null;
         $scope.text = null;
@@ -143,6 +151,7 @@ adb.controller("controller", function ($scope, socketService) {
         $scope.procMemInfo = null;
         $scope.diskSpace = null;
         $scope.logMessage = null;
+        $scope.clearIntervalOfHeapInfo();
     }
 
     $scope.initVariables();
@@ -415,11 +424,6 @@ adb.controller("controller", function ($scope, socketService) {
             cmd2 += (" " + procName);
         }
 
-        $scope.procMemInfo = {
-            procName: procName,
-            data: null
-        };
-
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 if (!procName) {
@@ -486,4 +490,21 @@ adb.controller("controller", function ($scope, socketService) {
             $scope.tempPkgCmd = null;
         }
     }
+
+    $scope.loadHeapInfoOfApp = function (serial, process) {
+        $scope.clearIntervalOfHeapInfo();
+
+        $scope.procMemInfo = {
+            procName: process,
+            data: null
+        };
+
+        $scope.intervalIdOfHeapInfo = window.setInterval(function () {
+            $scope.loadMemInfo(serial, process);
+        }, 2000);
+    }
+
+    $('#procMemInfoModal').on('hidden.bs.modal', function () {
+        $scope.clearIntervalOfHeapInfo();
+    });
 });
