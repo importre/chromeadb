@@ -57,7 +57,7 @@ adb.factory("socketService", ["$rootScope", "$q", function ($rootScope, $q) {
                         defer.resolve(param);
                     });
                 } else {
-                    console.log("write error:", arrayBuffer);
+                    // console.log("write error:", arrayBuffer);
                     defer.reject(writeInfo);
                 }
             });
@@ -127,6 +127,7 @@ adb.factory("socketService", ["$rootScope", "$q", function ($rootScope, $q) {
 adb.controller("controller", function ($scope, socketService) {
     $scope.host = "127.0.0.1";
     $scope.port = 5037;
+    $scope.numOfXAxis = 15;
 
     $scope.initVariables = function () {
         $scope.devInfo = null;
@@ -141,6 +142,17 @@ adb.controller("controller", function ($scope, socketService) {
             window.clearInterval(intervalId);
             $scope.intervalIdOfHeapInfo = null;
         }
+
+        if ($scope.heapChartList) {
+            for (var i = 0; i < $scope.heapChartList.length; i++) {
+                if ($scope.heapChartList[i]) {
+                    $scope.heapChartList[i].destroy();
+                }
+            }
+        }
+
+        $scope.heapSize = [newZeroArray($scope.numOfXAxis), newZeroArray($scope.numOfXAxis)];
+        $scope.heapAlloc = [newZeroArray($scope.numOfXAxis), newZeroArray($scope.numOfXAxis)];
     }
 
     $scope.initDeviceData = function () {
@@ -148,7 +160,6 @@ adb.controller("controller", function ($scope, socketService) {
         $scope.text = null;
         $scope.processList = null;
         $scope.memInfo = null;
-        $scope.procMemInfo = null;
         $scope.diskSpace = null;
         $scope.logMessage = null;
         $scope.clearIntervalOfHeapInfo();
@@ -431,8 +442,7 @@ adb.controller("controller", function ($scope, socketService) {
                     $scope.memInfo = data;
                 } else {
                     var data = parsePackageMemInfo(param.data);
-                    $scope.procMemInfo.procName = procName;
-                    $scope.procMemInfo.data = data;
+                    drawHeapGraph(data);
                 }
             });
     }
@@ -493,18 +503,46 @@ adb.controller("controller", function ($scope, socketService) {
 
     $scope.loadHeapInfoOfApp = function (serial, process) {
         $scope.clearIntervalOfHeapInfo();
-
-        $scope.procMemInfo = {
-            procName: process,
-            data: null
-        };
+        $scope.procName = process;
+        $scope.heapChartList = new Array(2);
+        for (var i = 0; i < 2; i++) {
+            var name = getChartId(i);
+            var data = [newZeroArray($scope.numOfXAxis)];
+            $scope.heapChartList[i] = $.jqplot(name, data);
+        }
 
         $scope.intervalIdOfHeapInfo = window.setInterval(function () {
             $scope.loadMemInfo(serial, process);
-        }, 2000);
+        }, 1000);
+
+        $('#procMemInfoModal').on('hidden.bs.modal', function () {
+            $scope.clearIntervalOfHeapInfo();
+        });
     }
 
-    $('#procMemInfoModal').on('hidden.bs.modal', function () {
-        $scope.clearIntervalOfHeapInfo();
-    });
+    function drawHeapGraph(data) {
+        // console.log(JSON.stringify(data));
+        for (var i = 0; i < data.length; i++) {
+            $scope.heapChartList[i].destroy();
+            var last = $scope.heapSize[i].length;
+            for (var j = 0; j < last - 1; j++) {
+                $scope.heapSize[i][j] = $scope.heapSize[i][j + 1];
+                $scope.heapAlloc[i][j] = $scope.heapAlloc[i][j + 1];
+            }
+
+            $scope.heapSize[i][last - 1] = data[i].size / 1024;
+            $scope.heapAlloc[i][last - 1] = data[i].alloc / 1024;
+            $scope.heapChartList[i] = $.jqplot(getChartId(i), [
+                $scope.heapSize[i],
+                $scope.heapAlloc[i]
+            ], {
+                title: data[i].area,
+                legend: {show: true, location: 'e', placement: 'insideGrid'},
+                series: [
+                    {label: "Heap Size (MB)"},
+                    {label: "Heap Alloc (MB)"}
+                ]
+            });
+        }
+    }
 });

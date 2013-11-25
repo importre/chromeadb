@@ -40,3 +40,21 @@ function stringToArrayBuffer(str, callback) {
     };
     f.readAsArrayBuffer(b);
 }
+
+function newZeroArray(size) {
+    var arr = new Array(size);
+    for (var i = 0; i < size; i++) {
+        arr[i] = 0;
+    }
+    return arr;
+}
+
+function getChartId(idx) {
+    switch (idx) {
+        case 0:
+            return "heap_native_chart";
+        case 1:
+            return "heap_dalvik_chart";
+    }
+    return null;
+}

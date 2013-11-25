@@ -15,6 +15,7 @@
     <script src="../scripts/chromeadb.js"></script>
 
     <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../bower_components/jqplot/jquery.jqplot.min.css" rel="stylesheet">
     <link href="../styles/chromeadb.css" rel="stylesheet">
 </head>
 
@@ -479,37 +480,14 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"
                         aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">{{ procMemInfo.procName }}</h4>
+                <h4 class="modal-title" id="myModalLabel">{{ procName }}</h4>
             </div>
             <div class="modal-body">
-                <div class="panel panel-primary" ng-repeat="memInfo in procMemInfo.data">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{{ memInfo.area.toUpperCase(); }} Heap</h3>
-                    </div>
-                    <div class="panel-body">
-                        <table class="table table-condensed table-hover">
-                            <thead>
-                            <tr class="active">
-                                <th style="width: 30%"></th>
-                                <th>HEAP (KB)</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td class="active">Heap size</td>
-                                <td>{{ memInfo.size }}</td>
-                            </tr>
-                            <tr>
-                                <td class="active">Heap alloc</td>
-                                <td>{{ memInfo.alloc }}</td>
-                            </tr>
-                            <tr>
-                                <td class="active">Heap free</td>
-                                <td>{{ memInfo.free }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div id="heap_native_chart">
+                    <canvas width="500" height="200"></canvas>
+                </div>
+                <div id="heap_dalvik_chart">
+                    <canvas width="500" height="200"></canvas>
                 </div>
             </div>
         </div>
@@ -548,6 +526,9 @@
 </div>
 
 <script src="../bower_components/jquery/jquery.min.js"></script>
+<script src="../bower_components/jqplot/jquery.jqplot.min.js"></script>
+<script src="../bower_components/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+<script src="../bower_components/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
 <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
 </body>

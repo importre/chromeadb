@@ -27,7 +27,7 @@ module.exports = function (grunt) {
                         src: ['dist/*', 'package/*.zip']
                     }
                 ]
-            },
+            }
         },
 
         copy: {
@@ -51,7 +51,11 @@ module.exports = function (grunt) {
                             "src/bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff",
                             "src/bower_components/bootstrap/dist/js/bootstrap.min.css",
                             "src/bower_components/jquery/jquery.min.js",
-                            'src/bower_components/angular/angular.min.js'
+                            "src/bower_components/angular/angular.min.js",
+                            "src/bower_components/jqplot/jquery.jqplot.min.css",
+                            "src/bower_components/jqplot/jquery.jqplot.min.js",
+                            "src/bower_components/jqplot/plugins/jqplot.canvasTextRenderer.min.js",
+                            "src/bower_components/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"
                         ]
                     }
                 ]
@@ -64,7 +68,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('build', [
-        'build:dist',
+        'build:dist'
     ]);
 
     grunt.registerTask('build:dist', [

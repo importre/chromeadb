@@ -176,7 +176,7 @@ function parsePackageMemInfo(data) {
             }
         }
 
-        if (found && (tempLine[0] == "Native" || tempLine[1] == "Dalvik")) {
+        if (found && (tempLine[0] == "Native" || tempLine[0] == "Dalvik")) {
             ret.push({
                 area: tempLine[0],
                 size: tempLine[length - idxOfSize],
