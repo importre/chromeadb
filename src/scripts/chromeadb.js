@@ -524,18 +524,13 @@ adb.controller("controller", function ($scope, socketService) {
         // console.log(JSON.stringify(data));
         for (var i = 0; i < data.length; i++) {
             $scope.heapChartList[i].destroy();
-            var last = $scope.heapSize[i].length;
-            for (var j = 0; j < last - 1; j++) {
-                $scope.heapSize[i][j] = $scope.heapSize[i][j + 1];
-                $scope.heapAlloc[i][j] = $scope.heapAlloc[i][j + 1];
-            }
+            $scope.heapSize[i].splice(0, 1);
+            $scope.heapAlloc[i].splice(0, 1);
+            $scope.heapSize[i].push(data[i].size / 1024);
+            $scope.heapAlloc[i].push(data[i].alloc / 1024);
 
-            $scope.heapSize[i][last - 1] = data[i].size / 1024;
-            $scope.heapAlloc[i][last - 1] = data[i].alloc / 1024;
-            $scope.heapChartList[i] = $.jqplot(getChartId(i), [
-                $scope.heapSize[i],
-                $scope.heapAlloc[i]
-            ], {
+            $scope.heapChartList[i].replot({
+                data: [$scope.heapSize[i], $scope.heapAlloc[i]],
                 title: data[i].area,
                 legend: {show: true, location: 'e', placement: 'insideGrid'},
                 series: [
