@@ -93,7 +93,10 @@ function makeCommand(cmd) {
  * @returns {Array}
  */
 function parseProcessList(data) {
-    var re = new RegExp(/^(\w+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+([a-fA-F0-9]+)\s+([a-fA-F0-9]+ \w)\s+(.+)/m);
+    // parse oldstyle ps result
+    var ore = new RegExp(/^(\w+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+([a-fA-F0-9]+)\s+([a-fA-F0-9]+ \w)\s+(.+)/m);
+    // parse 4.4 or above ps result
+    var nre = new RegExp(/^(\d+)\s+(\d+)\s+(\d+m?)\s+(\w+\s*<?)\s+(.+)/m);
     var lines = data.trim().split("\n");
     var line;
 
@@ -102,7 +105,8 @@ function parseProcessList(data) {
         if (0 == i) {
             line = line.trim().split(/\s+/);
         } else {
-            line = re.exec(line);
+            var parsed = ore.exec(line);
+            line = !!parsed ? parsed : nre.exec(line);
             line.splice(0, 1);
         }
         lines[i] = line;
