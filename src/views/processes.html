@@ -1,0 +1,22 @@
+<!--process tab-->
+
+<div class="tab-pane" id="processes">
+    <input class="form-control" type="search" ng-model="processQuery"
+           placeholder="Search processes">
+    <table class="table table-condensed table-hover">
+        <thead>
+        <tr class="active">
+            <th ng-repeat="item in processList.head">
+                {{ item.toUpperCase(); }}
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="process in processList.processes | filter:processQuery">
+            <td ng-repeat="item in process track by $index">
+                {{ item }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

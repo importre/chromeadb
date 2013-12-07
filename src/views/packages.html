@@ -1,0 +1,47 @@
+<!--package tab-->
+
+<div class="tab-pane" id="packages">
+    <div>
+        <input class="form-control" type="search" ng-model="packageQuery"
+               placeholder="Search packages">
+        <table class="table table-condensed table-hover">
+            <thead>
+            <tr class="active">
+                <th>PACKAGE</th>
+                <th>CLEAR DATA</th>
+                <th>UNINSTALL</th>
+                <th>FORCE-STOP</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="package in packages | filter:packageQuery">
+                <td>
+                    {{ package }}
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-warning"
+                            ng-click="setPackageCommandInfo(0, devInfo.serial, package);"
+                            data-toggle="modal" data-target="#alertModal">
+                        <span class="glyphicon glyphicon-floppy-remove"></span>
+                    </button>
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-danger"
+                            ng-click="setPackageCommandInfo(1, devInfo.serial, package);"
+                            data-toggle="modal" data-target="#alertModal">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-info"
+                            ng-click="setPackageCommandInfo(2, devInfo.serial, package);"
+                            data-toggle="modal" data-target="#alertModal">
+                        <span class="glyphicon glyphicon-ban-circle"></span>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

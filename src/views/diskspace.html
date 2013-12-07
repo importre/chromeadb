@@ -1,0 +1,21 @@
+<!--disk space tab-->
+
+<div class="tab-pane" id="diskspace">
+    <input class="form-control" type="search" ng-model="diskQuery" placeholder="Search disks">
+    <table class="table table-condensed table-hover">
+        <thead>
+        <tr class="active">
+            <th ng-repeat="item in diskSpace.head">
+                {{ item.toUpperCase(); }}
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="items in diskSpace.body | filter:diskQuery">
+            <td ng-repeat="item in items track by $index" ng-class="{'text-right': $index != 0}">
+                {{ item }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

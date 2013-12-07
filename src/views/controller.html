@@ -1,0 +1,182 @@
+<!--controller tab-->
+
+<div class="tab-pane" id="controller">
+    <form ng-submit="sendText(devInfo.serial, text);">
+        <div class="input-group">
+            <input type="text" class="form-control"
+                   placeholder="Send a string to the EditBox (in English)" ng-model="text"
+                   ng-submit="sendText(devInfo.serial, text);">
+            <span class="input-group-btn"> <button class="btn btn-success"><span
+                    class="glyphicon glyphicon-send"></span></button> </span>
+        </div>
+    </form>
+
+    <hr/>
+
+    <div class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Hard/Soft Button</div>
+            <div class="panel-body">
+                <table>
+                    <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <button class="btn btn-warning"
+                                    ng-click="onClickButton(devInfo.serial, 26);">
+                                <span class="glyphicon glyphicon-off"></span>
+                            </button>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <button class="btn btn-warning"
+                                    ng-click="onClickButton(devInfo.serial, 82);">
+                                <span class="glyphicon glyphicon-lock"></span>
+                                <span class="glyphicon glyphicon-list"></span>
+                            </button>
+                        </td>
+                        <td></td>
+                        <td>
+                            <button class="btn btn-info"
+                                    ng-click="onClickButton(devInfo.serial, 24);">
+                                <span class="glyphicon glyphicon-volume-up"></span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <button class="btn btn-info"
+                                    ng-click="onClickButton(devInfo.serial, 25);">
+                                <span class="glyphicon glyphicon-volume-down"></span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button class="btn btn-danger"
+                                    ng-click="onClickButton(devInfo.serial, 4);">
+                                <span class="glyphicon glyphicon-arrow-left"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger"
+                                    ng-click="onClickButton(devInfo.serial, 3);">
+                                <span class="glyphicon glyphicon-home"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger"
+                                    ng-click="onClickButton(devInfo.serial, 187);">
+                                <span class="glyphicon glyphicon-tasks"></span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 88);">
+                                <span class="glyphicon glyphicon-backward"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 85);">
+                                <span class="glyphicon glyphicon-play"></span>
+                                <span class="glyphicon glyphicon-pause"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 87);">
+                                <span class="glyphicon glyphicon-forward"></span>
+                            </button>
+                        </td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Keyboard</div>
+            <div class="panel-body">
+                <table id="keyboard">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 111);">
+                                Esc
+                            </button>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 61);">
+                                Tab
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 19);">
+                                <span class="glyphicon glyphicon-arrow-up"></span>
+                            </button>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 67);">
+                                B/S
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 21);">
+                                <span class="glyphicon glyphicon-arrow-left"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 20);">
+                                <span class="glyphicon glyphicon-arrow-down"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 22);">
+                                <span class="glyphicon glyphicon-arrow-right"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-default"
+                                    ng-click="onClickButton(devInfo.serial, 66);">
+                                Enter
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

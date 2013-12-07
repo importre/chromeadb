@@ -1,0 +1,52 @@
+<!--meminfo tab-->
+
+<div class="tab-pane" id="meminfo">
+    <input class="form-control" type="search" ng-model="meminfoQuery"
+           placeholder="Search memory info">
+    <table class="table table-condensed table-hover">
+        <thead>
+        <tr class="active">
+            <th>PROCESS</th>
+            <th>PID</th>
+            <th>TOTAL PSS (KB)</th>
+            <th>TOTAL PSS (MB)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="info in memInfo | filter:meminfoQuery">
+            <td>
+                <a href="#meminfo" data-toggle="modal" data-target="#procMemInfoModal"
+                   ng-click="loadHeapInfoOfApp(devInfo.serial, info.process);">
+                    {{ info.process }}
+                </a>
+            </td>
+            <td class="text-right">{{ info.pid }}</td>
+            <td class="text-right">{{ info.kb }}</td>
+            <td class="text-right">{{ info.mb }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!--package meminfo dialog-->
+
+<div class="modal fade" id="procMemInfoModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{{ procName }}</h4>
+            </div>
+            <div class="modal-body">
+                <div id="heap_native_chart">
+                    <canvas width="500" height="200"></canvas>
+                </div>
+                <div id="heap_dalvik_chart">
+                    <canvas width="500" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

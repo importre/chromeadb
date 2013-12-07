@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 chrome.app.runtime.onLaunched.addListener(function () {
-    chrome.app.window.create('../views/index.html', {
+    chrome.app.window.create("../views/index.html", {
         minWidth: 800,
         minHeight: 600,
         width: 1280,

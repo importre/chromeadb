@@ -10,9 +10,15 @@
     <title>Chrome ADB</title>
 
     <script src="../bower_components/angular/angular.min.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+
     <script src="../scripts/utils.js"></script>
     <script src="../scripts/parser.js"></script>
+
     <script src="../scripts/chromeadb.js"></script>
+    <script src="../scripts/controllers.js"></script>
+    <script src="../scripts/services.js"></script>
+    <script src="../scripts/controllers.js"></script>
 
     <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../bower_components/jqplot/jquery.jqplot.min.css" rel="stylesheet">
@@ -24,8 +30,7 @@
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#"
-               ng-click="loadDevices();">ChromeADB</a>
+            <a class="navbar-brand" href="#" ng-click="loadDevices();">ChromeADB</a>
         </div>
         <div>
             <form class="navbar-form navbar-right">
@@ -44,459 +49,132 @@
         </div>
     </div>
 </div>
+<!--end div.navbar-->
 
 <div class="container" ng-init="loadDevices();">
+    <div class="row">
 
-<div class="row">
+        <!--left side menu-->
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Device List <span class="badge pull-right">{{ numOfDevices }}</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <ul class="nav nav-pills nav-stacked" ng-model="devInfo">
+                        <li ng-class="{'active': deviceInfo == devInfo}"
+                            ng-repeat="deviceInfo in deviceInfoList">
+                            <a href="#" ng-click="loadDeviceInfo(deviceInfo.serial);">
+                                {{ deviceInfo.model }}
+                                <small>({{ deviceInfo.serial }})</small>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
-<!--left side menu-->
-<div class="col-md-3">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">Device List <span
-                    class="badge pull-right">{{ numOfDevices }}</span>
-            </h3>
+            <hr/>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">Device Info</div>
+
+                <div class="panel-body" ng-show="devInfo">
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                        <tr class="active">
+                            <th style="width: 40%"></th>
+                            <th>INFO</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="active text-center">STATE</td>
+                            <td class="text-center">{{ devInfo.state }}</td>
+                        </tr>
+                        <tr>
+                            <td class="active text-center">USB</td>
+                            <td class="text-center">{{ devInfo.usb }}</td>
+                        </tr>
+                        <tr>
+                            <td class="active text-center">PRODUCT</td>
+                            <td class="text-center">{{ devInfo.product }}</td>
+                        </tr>
+                        <tr>
+                            <td class="active text-center">DEVICE</td>
+                            <td class="text-center">{{ devInfo.device }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">Log Message</div>
+
+                <div class="panel-body">
+                    <p>{{ logMessage.cmd }}</p>
+
+                    <p>{{ logMessage.res }}</p>
+                </div>
+            </div>
         </div>
-        <div class="panel-body">
-            <ul class="nav nav-pills nav-stacked" ng-model="devInfo">
-                <li ng-class="{'active': deviceInfo == devInfo}"
-                    ng-repeat="deviceInfo in deviceInfoList">
-                    <a href="#"
-                       ng-click="loadDeviceInfo(deviceInfo.serial);">
-                        {{ deviceInfo.model }}
-                        <small>({{ deviceInfo.serial }})</small>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
 
-    <hr/>
+        <!--right contents-->
+        <div class="col-md-9" ng-model="devInfo">
 
-    <div class="panel panel-primary">
-        <div class="panel-heading">Device Info</div>
+            <!--tabs-->
+            <div>
+                <ul class="nav nav-pills nav-justified" id="mytab">
+                    <li>
+                        <a href="#packages" data-toggle="tab"
+                           ng-click="loadPackages(devInfo.serial);">Packages</a>
+                    </li>
+                    <li>
+                        <a href="#controller" data-toggle="tab">Controller</a>
+                    </li>
+                    <li>
+                        <a href="#processes" data-toggle="tab"
+                           ng-click="loadProcessList(devInfo.serial);">Process List</a>
+                    </li>
+                    <li>
+                        <a href="#meminfo" data-toggle="tab"
+                           ng-click="loadMemInfo(devInfo.serial);">App Memory Info</a>
+                    </li>
+                    <li>
+                        <a href="#diskspace" data-toggle="tab"
+                           ng-click="loadDiskSpace(devInfo.serial);">Disk Space</a>
+                    </li>
+                </ul>
+            </div>
 
-        <div class="panel-body" ng-show="devInfo">
-            <table class="table table-condensed table-hover">
-                <thead>
-                <tr class="active">
-                    <th style="width: 40%"></th>
-                    <th>INFO</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="active text-center">STATE</td>
-                    <td class="text-center">{{ devInfo.state }}</td>
-                </tr>
-                <tr>
-                    <td class="active text-center">USB</td>
-                    <td class="text-center">{{ devInfo.usb }}</td>
-                </tr>
-                <tr>
-                    <td class="active text-center">PRODUCT</td>
-                    <td class="text-center">{{ devInfo.product }}</td>
-                </tr>
-                <tr>
-                    <td class="active text-center">DEVICE</td>
-                    <td class="text-center">{{ devInfo.device }}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+            <hr/>
 
-    <hr/>
-
-    <div class="panel panel-primary">
-        <div class="panel-heading">Log Message</div>
-
-        <div class="panel-body">
-            <p>{{ logMessage.cmd }}</p>
-
-            <p>{{ logMessage.res }}</p>
-        </div>
-    </div>
-</div>
-
-
-<!--right contents-->
-<div class="col-md-9" ng-model="devInfo">
-
-<!--tabs-->
-<div>
-    <ul class="nav nav-pills nav-justified" id="mytab">
-        <li>
-            <a href="#packages" data-toggle="tab"
-               ng-click="loadPackages(devInfo.serial);">Packages</a>
-        </li>
-        <li>
-            <a href="#controller" data-toggle="tab">Controller</a>
-        </li>
-        <li>
-            <a href="#processes" data-toggle="tab"
-               ng-click="loadProcessList(devInfo.serial);">Process List</a>
-        </li>
-        <li>
-            <a href="#meminfo" data-toggle="tab"
-               ng-click="loadMemInfo(devInfo.serial);">App Memory Info</a>
-        </li>
-        <li>
-            <a href="#diskspace" data-toggle="tab"
-               ng-click="loadDiskSpace(devInfo.serial);">Disk Space</a>
-        </li>
-        <!--<li><a href="#screenshot" data-toggle="tab">Screenshot</a></li>-->
-    </ul>
-</div>
-
-<hr/>
-
-<!--tab contents-->
-<div class="tab-content">
-
-<!--package tab-->
-<div class="tab-pane" id="packages">
-    <div>
-        <input class="form-control" type="search"
-               ng-model="packageQuery"
-               placeholder="Search packages">
-        <table class="table table-condensed table-hover">
-            <thead>
-            <tr class="active">
-                <th>PACKAGE</th>
-                <th>CLEAR DATA</th>
-                <th>UNINSTALL</th>
-                <th>FORCE-STOP</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="package in packages | filter:packageQuery">
-                <td>{{ package }}</td>
-                <td class="text-center">
-                    <button class="btn btn-warning"
-                            ng-click="setPackageCommandInfo(0, devInfo.serial, package);"
-                            data-toggle="modal" data-target="#alertModal">
-                        <span class="glyphicon glyphicon-floppy-remove"></span>
-                    </button>
-                </td>
-                <td class="text-center">
-                    <button class="btn btn-danger"
-                            ng-click="setPackageCommandInfo(1, devInfo.serial, package);"
-                            data-toggle="modal" data-target="#alertModal">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                </td>
-                <td class="text-center">
-                    <button class="btn btn-info"
-                            ng-click="setPackageCommandInfo(2, devInfo.serial, package);"
-                            data-toggle="modal" data-target="#alertModal">
-                        <span class="glyphicon glyphicon-ban-circle"></span>
-                    </button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!--controller tab-->
-<div class="tab-pane" id="controller">
-    <form ng-submit="sendText(devInfo.serial, text);">
-        <div class="input-group">
-            <input type="text" class="form-control"
-                   placeholder="Send a string to the EditBox (in English)"
-                   ng-model="text" ng-submit="sendText(devInfo.serial, text);">
-            <span class="input-group-btn">
-                <button class="btn btn-success">
-                    <span class="glyphicon glyphicon-send"></span>
-                </button>
-            </span>
-        </div>
-    </form>
-
-    <hr/>
-
-    <div class="col-md-6">
-
-        <div class="panel panel-primary">
-            <div class="panel-heading">Hard/Soft Button</div>
-            <div class="panel-body">
-                <table>
-                    <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <button class="btn btn-warning"
-                                    ng-click="onClickButton(devInfo.serial, 26);">
-                                <span class="glyphicon glyphicon-off"></span>
-                            </button>
-                        </td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td>
-                            <button class="btn btn-warning"
-                                    ng-click="onClickButton(devInfo.serial, 82);">
-                                <span class="glyphicon glyphicon-lock"></span>
-                                <span class="glyphicon glyphicon-list"></span>
-                            </button>
-                        </td>
-                        <td></td>
-                        <td>
-                            <button class="btn btn-info"
-                                    ng-click="onClickButton(devInfo.serial, 24);">
-                                <span class="glyphicon glyphicon-volume-up"></span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <button class="btn btn-info"
-                                    ng-click="onClickButton(devInfo.serial, 25);">
-                                <span class="glyphicon glyphicon-volume-down"></span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button class="btn btn-danger"
-                                    ng-click="onClickButton(devInfo.serial, 4);">
-                                <span class="glyphicon glyphicon-arrow-left"></span>
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-danger"
-                                    ng-click="onClickButton(devInfo.serial, 3);">
-                                <span class="glyphicon glyphicon-home"></span>
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-danger"
-                                    ng-click="onClickButton(devInfo.serial, 187);">
-                                <span class="glyphicon glyphicon-tasks"></span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 88);">
-                                <span class="glyphicon glyphicon-backward"></span>
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 85);">
-                                <span class="glyphicon glyphicon-play"></span>
-                                <span class="glyphicon glyphicon-pause"></span>
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 87);">
-                                <span class="glyphicon glyphicon-forward"></span>
-                            </button>
-                        </td>
-                        <td></td>
-                    </tr>
-                    </tbody>
-                </table>
+            <!--tab contents-->
+            <div class="tab-content">
+                <div ng-view></div>
             </div>
         </div>
     </div>
+    <!--end div.row-->
 
-    <div class="col-md-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading">Keyboard</div>
-            <div class="panel-body">
-                <table id="keyboard">
-                    <tbody>
-                    <tr>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 111);">
-                                Esc
-                            </button>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 61);">
-                                Tab
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                        </td>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 19);">
-                                <span class="glyphicon glyphicon-arrow-up"></span>
-                            </button>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 67);">
-                                B/S
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 21);">
-                                <span class="glyphicon glyphicon-arrow-left"></span>
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 20);">
-                                <span class="glyphicon glyphicon-arrow-down"></span>
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 22);">
-                                <span class="glyphicon glyphicon-arrow-right"></span>
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-default"
-                                    ng-click="onClickButton(devInfo.serial, 66);">
-                                Enter
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+    <!--footer-->
+    <div class="navbar navbar-inverse navbar-fixed-bottom">
+        <div class="container">
+            <div class="navbar-right">
+                <p class="navbar-bottom-brand">&copy; importre 2013</p>
             </div>
         </div>
     </div>
-</div>
-
-<!--process tab-->
-<div class="tab-pane" id="processes">
-    <input class="form-control" type="search" ng-model="processQuery"
-           placeholder="Search processes">
-    <table class="table table-condensed table-hover">
-        <thead>
-        <tr class="active">
-            <th ng-repeat="item in processList.head">{{ item.toUpperCase(); }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="process in processList.processes | filter:processQuery">
-            <td ng-repeat="item in process track by $index">{{ item }}</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<!--meminfo tab-->
-<div class="tab-pane" id="meminfo">
-    <input class="form-control" type="search" ng-model="meminfoQuery"
-           placeholder="Search memory info">
-    <table class="table table-condensed table-hover">
-        <thead>
-        <tr class="active">
-            <th>PROCESS</th>
-            <th>PID</th>
-            <th>TOTAL PSS (KB)</th>
-            <th>TOTAL PSS (MB)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="info in memInfo | filter:meminfoQuery">
-            <td>
-                <a href="#" data-toggle="modal" data-target="#procMemInfoModal"
-                   ng-click="loadHeapInfoOfApp(devInfo.serial, info.process);">
-                    {{ info.process }}
-                </a>
-            </td>
-            <td class="text-right">{{ info.pid }}</td>
-            <td class="text-right">{{ info.kb }}</td>
-            <td class="text-right">{{ info.mb }}</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<!--disk space tab-->
-<div class="tab-pane" id="diskspace">
-    <input class="form-control" type="search" ng-model="diskQuery"
-           placeholder="Search disks">
-    <table class="table table-condensed table-hover">
-        <thead>
-        <tr class="active">
-            <th ng-repeat="item in diskSpace.head">
-                {{ item.toUpperCase(); }}
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="items in diskSpace.body | filter:diskQuery">
-            <td ng-repeat="item in items track by $index"
-                ng-class="{'text-right': $index != 0}">
-                {{ item }}
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-</div>
-</div>
-</div>
-<!--end div.row-->
-
-<!--footer-->
-<div class="navbar navbar-inverse navbar-fixed-bottom">
-    <div class="container">
-        <div class="navbar-right">
-            <p class="navbar-bottom-brand">&copy; importre 2013</p>
-        </div>
-    </div>
-</div>
 </div>
 <!--end div.container-->
 
-
-<!--package meminfo dialog-->
-<div class="modal fade" id="procMemInfoModal" tabindex="-1" role="dialog"
-     aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">{{ procName }}</h4>
-            </div>
-            <div class="modal-body">
-                <div id="heap_native_chart">
-                    <canvas width="500" height="200"></canvas>
-                </div>
-                <div id="heap_dalvik_chart">
-                    <canvas width="500" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!--alert dialog-->
-<div class="modal fade" id="alertModal" tabindex="-1" role="dialog"
-     aria-labelledby="alertLabel" aria-hidden="true" ng-model="tempPkgCmd">
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertLabel"
+     aria-hidden="true" ng-model="tempPkgCmd">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -504,9 +182,7 @@
                         aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="alertLabel">{{ tempPkgCmd.packageName }}</h4>
             </div>
-            <div class="modal-body">
-                Do you want to {{ tempPkgCmd.msg }} ?
-            </div>
+            <div class="modal-body">Do you want to {{ tempPkgCmd.msg }} ?</div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     Cancel
@@ -518,11 +194,6 @@
             </div>
         </div>
     </div>
-</div>
-
-
-</div>
-</div>
 </div>
 
 <script src="../bower_components/jquery/jquery.min.js"></script>
