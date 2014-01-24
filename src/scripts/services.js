@@ -46,21 +46,32 @@ adb.factory("socketService", ["$rootScope", "$q", function ($rootScope, $q) {
         var defer = $q.defer();
 
         stringToArrayBuffer(str, function (bytes) {
-            chrome.socket.write(createInfo.socketId, bytes, function (writeInfo) {
-                // console.log("writeInfo:", writeInfo);
-                if (writeInfo.bytesWritten > 0) {
-                    $rootScope.$apply(function () {
-                        var param = {
-                            createInfo: createInfo,
-                            writeInfo: writeInfo
-                        };
-                        defer.resolve(param);
-                    });
-                } else {
-                    // console.log("write error:", arrayBuffer);
-                    defer.reject(writeInfo);
-                }
-            });
+            writeBytes(createInfo, bytes)
+                .then(function (createInfo) {
+                    defer.resolve(createInfo);
+                });
+        });
+
+        return defer.promise;
+    }
+    
+    function writeBytes(createInfo, bytes) {
+        var defer = $q.defer();
+
+        chrome.socket.write(createInfo.socketId, bytes, function (writeInfo) {
+            // console.log("writeInfo:", writeInfo);
+            if (writeInfo.bytesWritten > 0) {
+                $rootScope.$apply(function () {
+                    var param = {
+                        createInfo: createInfo,
+                        writeInfo: writeInfo
+                    };
+                    defer.resolve(param);
+                });
+            } else {
+                // console.log("write error:", arrayBuffer);
+                defer.reject(writeInfo);
+            }
         });
 
         return defer.promise;
@@ -119,6 +130,7 @@ adb.factory("socketService", ["$rootScope", "$q", function ($rootScope, $q) {
         create: create,
         connect: connect,
         write: write,
+        writeBytes: writeBytes,
         read: read,
         readAll: readAll
     }

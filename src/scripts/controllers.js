@@ -77,6 +77,13 @@ adb.controller("controller", function ($scope, socketService) {
                 return socketService.read(param.createInfo, 4);
             });
     }
+    
+    $scope.getByteCommandPromise = function (cmd, createInfo) {
+        return socketService.writeBytes(createInfo, cmd)
+            .then(function (param) {
+                return socketService.read(param.createInfo, 4);
+            });
+    }
 
     $scope.getReadAllPromise = function (cmd1, cmd2) {
         return $scope.getNewCommandPromise(cmd1)
@@ -212,6 +219,127 @@ adb.controller("controller", function ($scope, socketService) {
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 $scope.logMessage.res = param.data.trim();
+            });
+    }
+    
+    $scope.pushFile = function (serial, fileEntry, filePath) {
+        fileEntry.file(function(file) {
+            var reader = new FileReader();
+//             reader.onerror = errorHandler;
+            reader.onloadend = function(e) {
+                 $scope.pushFileCommands(e, serial, filePath);
+            };
+            reader.readAsArrayBuffer(file);
+        });
+    }
+    
+    $scope.pushFileCommands = function (e, serial, filePath) {
+        var fileName = filePath.replace(/^.*[\\\/]/, '');
+        var cmd1 = "host:transport:" + serial;
+        var cmd2 = "sync:";
+        var sendCmd1 = "SEND";
+        var sendCmd3 = "/data/local/tmp/" + fileName + ",33206";
+        var sendCmd2 = integerToArrayBuffer(sendCmd3.length) ;
+        var dataCmd1 = "DATA";
+        var doneCmd = "DONE";
+//         var dataCmd2 = integerToArrayBuffer(64 * 1024);
+
+        $scope.logMessage = {
+            cmd: "Push File",
+            res: null
+        };
+
+        $scope.getNewCommandPromise(cmd1)
+            .then(function (param) {
+                console.log(param);
+                if (param.data == "OKAY") {
+                    return $scope.getCommandPromise(cmd2, param.createInfo);
+                }
+            })
+            .then(function (param) {
+                console.log(param);
+                if (param.data == "OKAY") {
+                    return socketService.write(param.createInfo, sendCmd1);
+                }
+            })
+            .then(function (param) {
+                console.log(param);
+                return socketService.writeBytes(param.createInfo, sendCmd2.buffer);
+            })
+            .then(function (param) {
+                console.log(param);
+                return socketService.write(param.createInfo, sendCmd3);
+            })
+            .then(function (param) {
+                console.log(param);
+                var defer = $q.defer();
+                var file = e.target.result;
+                var maxChunkSize = 64 * 1024;
+                for (var i = 0; i < file.byteLength; i += maxChunkSize) {
+                    var chunkSize = maxChunkSize;
+                    //check if on last chunk
+                    if (i + maxChunkSize > file.byteLength) {
+                        chuckSize = file.byteLength - i;
+                    }
+                    
+                    var fileSlice = file.slice(i, i + chuckSize);
+                    defer.then(function () {
+                        return socketService.write(param.createInfo, dataCmd1);
+                    })
+                    .then(function () {
+                        var chunkSizeInBytes = integerToArrayBuffer(chunkSize);
+                        return socketService.writeBytes(param.createInfo, chunkSizeInBytes);
+                    })
+                    .then(function () {
+                        return socketService.writeBytes(param.createInfo, fileSlice);
+                    });
+                }
+                return defer.promise;
+            })
+            .then(function (param) {
+                console.log(param);
+                return socketService.write(param.createInfo, doneCmd);
+            })
+            .then(function (param) {
+                console.log(param);
+                return socketService.write(param.createInfo, integerToArrayBuffer(0));
+            })
+            .then(function (param) {
+                console.log(param);
+                $scope.logMessage.res = "Done";
+            })
+            .catch(function (param) {
+                $scope.initVariables();
+                $scope.logMessage = {
+                    cmd: "Connection Error",
+                    res: "Cannot find any devices"
+                };
+            });
+    }
+    
+    /**
+     * Installs a package.
+     *
+     * $ adb shell pm install <package>
+     *
+     * @param serial
+     * @param packageName
+     */
+    $scope.installPackage = function (serial, packagePath) {
+        var cmd1 = "host:transport:" + serial;
+        var cmd2 = "shell:pm install " + packagePath;
+
+        $scope.logMessage = {
+            cmd: "Install",
+            res: null
+        };
+
+        $scope.getReadAllPromise(cmd1, cmd2)
+            .then(function (param) {
+                $scope.logMessage.res = param.data.trim();
+                if ($scope.logMessage.res.length == 0) {
+                    $scope.logMessage.res = "Done";
+                }
             });
     }
 
@@ -379,6 +507,16 @@ adb.controller("controller", function ($scope, socketService) {
         } else {
             $scope.tempPkgCmd = null;
         }
+    }
+    
+    $scope.chooseAndInstallPackage = function () {
+        chrome.fileSystem.chooseEntry({'type':'openFile'}, function (entry, fileEntries) {
+            chrome.fileSystem.getDisplayPath(entry, function (displayPath) {
+                $scope.pushFile($scope.devInfo.serial, entry, displayPath);
+//                 $scope.installPackage($scope.devInfo.serial, displayPath);
+            });
+        }); 
+//         /Users/kabucey/Programs/android-sdks/tools/apps/SdkController/bin/SdkControllerApp.apk
     }
 
     $scope.loadHeapInfoOfApp = function (serial, process) {

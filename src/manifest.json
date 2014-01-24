@@ -16,6 +16,7 @@
     "minimum_chrome_version": "24",
     "name": "Chrome ADB",
     "permissions": [
+        "fileSystem",
         {
             "socket": [
                 "tcp-connect"

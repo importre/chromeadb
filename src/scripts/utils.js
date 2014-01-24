@@ -58,3 +58,9 @@ function getChartId(idx) {
     }
     return null;
 }
+
+function integerToArrayBuffer(value) {
+    result = new Uint32Array(1);
+    result[0] = value;
+    return result;
+}
