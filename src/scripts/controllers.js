@@ -238,7 +238,8 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
         var cmd1 = "host:transport:" + serial;
         var cmd2 = "sync:";
         var sendCmd1 = "SEND";
-        var sendCmd3 = "/data/local/tmp/" + fileName + ",33206";
+        var packagePath = "/data/local/tmp/" + fileName;
+        var sendCmd3 = packagePath + ",33206";
         var sendCmd2 = integerToArrayBuffer(sendCmd3.length) ;
         var dataCmd1 = "DATA";
         var doneCmd = "DONE";
@@ -283,20 +284,24 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                         chunkSize = file.byteLength - i;
                     }
                     
-                    var fileSlice = file.slice(i, i + chunkSize);
-                    promise = promise.then(function (param) {
-                        console.log("DATA");
-                        return socketService.write(param.createInfo, dataCmd1);
-                    })
-                    .then(function (param) {
-                        console.log("DATA CHUNK SIZE");
-                        var chunkSizeInBytes = integerToArrayBuffer(chunkSize);
-                        return socketService.writeBytes(param.createInfo, chunkSizeInBytes.buffer);
-                    })
-                    .then(function (param) {
-                        console.log("DATA FILE");
-                        return socketService.writeBytes(param.createInfo, fileSlice);
-                    });
+                    var chunkFunc = function(i, chunkSize) {
+                        var fileSlice = file.slice(i, i + chunkSize);
+                        promise = promise.then(function (param) {
+                            console.log("DATA");
+                            return socketService.write(param.createInfo, dataCmd1);
+                        })
+                        .then(function (param) {
+                            console.log("DATA CHUNK SIZE");
+                            console.log(chunkSize);
+                            var chunkSizeInBytes = integerToArrayBuffer(chunkSize);
+                            return socketService.writeBytes(param.createInfo, chunkSizeInBytes.buffer);
+                        })
+                        .then(function (param) {
+                            console.log("DATA FILE");
+                            return socketService.writeBytes(param.createInfo, fileSlice);
+                        });
+                    };
+                    chunkFunc(i, chunkSize);
                 }
                 
                 promise.then(function (param) {
@@ -309,7 +314,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                 })
                 .then(function (param) {
                     console.log(param);
-                    $scope.logMessage.res = "Done";
+                    $scope.installPackage(serial, packagePath);
                 });
                 
                 defer.resolve(param);
