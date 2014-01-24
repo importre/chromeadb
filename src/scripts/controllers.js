@@ -4,7 +4,7 @@
 
 var adb = angular.module("chromeADB");
 
-adb.controller("controller", function ($scope, socketService) {
+adb.controller("controller", ["$scope", "$q", "socketService", function ($scope, $q, socketService) {
     $scope.host = "127.0.0.1";
     $scope.port = 5037;
     $scope.numOfXAxis = 15;
@@ -273,41 +273,49 @@ adb.controller("controller", function ($scope, socketService) {
             .then(function (param) {
                 console.log(param);
                 var defer = $q.defer();
+                var promise = defer.promise;
                 var file = e.target.result;
                 var maxChunkSize = 64 * 1024;
                 for (var i = 0; i < file.byteLength; i += maxChunkSize) {
                     var chunkSize = maxChunkSize;
                     //check if on last chunk
                     if (i + maxChunkSize > file.byteLength) {
-                        chuckSize = file.byteLength - i;
+                        chunkSize = file.byteLength - i;
                     }
                     
-                    var fileSlice = file.slice(i, i + chuckSize);
-                    defer.then(function () {
+                    var fileSlice = file.slice(i, i + chunkSize);
+                    promise = promise.then(function (param) {
+                        console.log("DATA");
                         return socketService.write(param.createInfo, dataCmd1);
                     })
-                    .then(function () {
+                    .then(function (param) {
+                        console.log("DATA CHUNK SIZE");
                         var chunkSizeInBytes = integerToArrayBuffer(chunkSize);
-                        return socketService.writeBytes(param.createInfo, chunkSizeInBytes);
+                        return socketService.writeBytes(param.createInfo, chunkSizeInBytes.buffer);
                     })
-                    .then(function () {
+                    .then(function (param) {
+                        console.log("DATA FILE");
                         return socketService.writeBytes(param.createInfo, fileSlice);
                     });
                 }
-                return defer.promise;
-            })
-            .then(function (param) {
-                console.log(param);
-                return socketService.write(param.createInfo, doneCmd);
-            })
-            .then(function (param) {
-                console.log(param);
-                return socketService.write(param.createInfo, integerToArrayBuffer(0));
-            })
-            .then(function (param) {
-                console.log(param);
-                $scope.logMessage.res = "Done";
-            })
+                
+                promise.then(function (param) {
+                    console.log(param);
+                    return socketService.write(param.createInfo, doneCmd);
+                })
+                .then(function (param) {
+                    console.log(param);
+                    return socketService.write(param.createInfo, integerToArrayBuffer(0));
+                })
+                .then(function (param) {
+                    console.log(param);
+                    $scope.logMessage.res = "Done";
+                });
+                
+                defer.resolve(param);
+                
+                return promise;
+            })            
             .catch(function (param) {
                 $scope.initVariables();
                 $scope.logMessage = {
@@ -558,5 +566,5 @@ adb.controller("controller", function ($scope, socketService) {
             });
         }
     }
-});
+}]);
 
