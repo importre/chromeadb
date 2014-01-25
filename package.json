@@ -1,7 +1,7 @@
 {
     "author": "BrickSimple",
     "dependencies": {},
-    "description": "BrickSimple Chrome ADB(Android Debug Bridge) Client",
+    "description": "BrickSimple Chrome ADB (Android Debug Bridge) Client",
     "devDependencies": {
         "grunt": "~0.4.1",
         "grunt-contrib-clean": "~0.5.0",

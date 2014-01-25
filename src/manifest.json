@@ -6,7 +6,7 @@
             ]
         }
     },
-    "description": "BrickSimple Chrome ADB(Android Debug Bridge) Client",
+    "description": "BrickSimple Chrome ADB (Android Debug Bridge) Client",
     "icons": {
         "128": "assets/icon_128.png",
         "16": "assets/icon_016.png",

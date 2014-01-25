@@ -47,20 +47,13 @@ div .install-package {
 .navbar-brand img {
     height:50px;
 }
-
+ 
 .navbar-bottom-brand {
-    float: left;
-    padding: 15px 15px;
-    font-size: 13px;
-    line-height: 20px;
-    color: #999999;
+    padding:0;
 }
 
-.navbar-bottom-brand:hover,
-.navbar-bottom-brand:focus {
-    text-decoration: none;
-    color: #ffffff;
-    background-color: transparent;
+.navbar-bottom-brand img {
+    height:50px;
 }
 
 th {
