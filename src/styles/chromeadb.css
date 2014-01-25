@@ -27,6 +27,27 @@ tr>td.active {
     font-weight: bold;
 }
 
+.install-package-button {
+    width:150px !important;
+}
+
+div .search-packages {
+    float:right;
+    width:80%;
+}
+
+div .install-package {
+   float:left;
+}
+
+.navbar-brand {
+    padding:0 0 0 15px;
+}
+
+.navbar-brand img {
+    height:50px;
+}
+
 .navbar-bottom-brand {
     float: left;
     padding: 15px 15px;

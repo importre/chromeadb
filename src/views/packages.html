@@ -2,13 +2,15 @@
 
 <div class="tab-pane" id="packages">
     <div>
-        <div class="form-group">
-            <button class="btn btn-primary"
-                    ng-click="chooseAndInstallPackage();">
-                Install
-            </button>
+        <div class="search-packages">
             <input class="form-control" type="search" ng-model="packageQuery"
-                   placeholder="Search packages">
+                               placeholder="Search packages">
+        </div>
+        <div class="install-package">
+            <button class="btn btn-primary install-package-button"
+                    ng-click="chooseAndInstallPackage();">
+                Install Package
+            </button>
         </div>
         <table class="table table-condensed table-hover">
             <thead>
