@@ -339,7 +339,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
 
         $scope.logMessage = {
             cmd: "Install Package",
-            res: null
+            res: "Installing..."
         };
 
         $scope.getReadAllPromise(cmd1, cmd2)
