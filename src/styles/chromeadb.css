@@ -60,8 +60,6 @@ th {
     text-align: center;
 }
 
-/*
-table {
-    -webkit-user-select: text;
+.navbar {
+    background-color: #000;
 }
-*/
