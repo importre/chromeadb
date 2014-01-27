@@ -1,7 +1,7 @@
 BrickSimple ChromeADB
 =========
 
-**BrickSimple Chrome ADB** is BrickSimple Chrome ADB (Android Debug Bridge) Client.
+**BrickSimple Chrome ADB** is a Chrome extension ADB (Android Debug Bridge) Client.
 
 When launched, you can see all devices connected to your machine if the ADB connection is successful.  
 Click a device that you want to control or monitor. And enjoy!
