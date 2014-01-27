@@ -348,6 +348,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                 if ($scope.logMessage.res.length == 0) {
                     $scope.logMessage.res = "Done";
                 }
+                $scope.loadPackages(serial);
             });
     }
 
@@ -365,7 +366,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
 
         $scope.logMessage = {
             cmd: "Uninstall",
-            res: null
+            res: "Uninstalling..."
         };
 
         $scope.getReadAllPromise(cmd1, cmd2)
@@ -374,6 +375,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                 if ($scope.logMessage.res.length == 0) {
                     $scope.logMessage.res = "Done";
                 }
+                $scope.loadPackages(serial);
             });
     }
 
