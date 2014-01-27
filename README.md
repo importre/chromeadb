@@ -1,7 +1,7 @@
-ChromeADB
+BrickSimple ChromeADB
 =========
 
-**ChromeADB** is Chrome ADB(Android Debug Bridge) Client.
+**BrickSimple Chrome ADB** is BrickSimple Chrome ADB (Android Debug Bridge) Client.
 
 When launched, you can see all devices connected to your machine if the ADB connection is successful.  
 Click a device that you want to control or monitor. And enjoy!
@@ -68,7 +68,7 @@ References
 License
 -------
 
-BSD 2-Clause. See the `LICENSE` file.
+BrickSimple Public License 1.0 (Based on the Mozilla Public License Version 2.0). See the `LICENSE` file.
 
 
 
