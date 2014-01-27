@@ -6,7 +6,7 @@ BrickSimple ChromeADB
 When launched, you can see all devices connected to your machine if the ADB connection is successful.  
 Click a device that you want to control or monitor. And enjoy!
 
-![screenshot](https://lh3.googleusercontent.com/-YZShQkbkFCQ/Uo-kcYDhn2I/AAAAAAAAFPo/G2aeDR4jLZY/w792-h532-no/chromeadb.png)
+![screenshot](https://doc-08-5s-docs.googleusercontent.com/docs/securesc/i5j4lt8bqpt4k4hqli1ilhu54oj7e1q8/38vo5150ng47g3cqalbvk1im2u4mdm83/1390838400000/02142613266985824987/02142613266985824987/0B_Vv265rhyJRVWh5UDdocmx3Y0k?h=18048014979615885830&e=view)
 
 
 
