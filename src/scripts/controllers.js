@@ -225,9 +225,17 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
     $scope.pushFile = function (serial, fileEntry, filePath) {
         fileEntry.file(function(file) {
             var reader = new FileReader();
-//             reader.onerror = errorHandler;
+            reader.onerror = function(e) {
+                $scope.logMessage = {
+                    cmd: "File Error",
+                    res: e.target.error.message
+                };
+                $scope.$apply();
+            };
             reader.onloadend = function(e) {
-                 $scope.pushFileCommands(e, serial, filePath);
+                if (!e.target.error) {
+                    $scope.pushFileCommands(e, serial, filePath);
+                }
             };
             reader.readAsArrayBuffer(file);
         });
