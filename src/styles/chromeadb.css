@@ -23,37 +23,37 @@ body {
     background-color: #d9544f;
 }
 
-tr>td.active {
+tr > td.active {
     font-weight: bold;
 }
 
 .install-package-button {
-    width:150px !important;
+    width: 150px !important;
 }
 
 div .search-packages {
-    float:right;
-    width:80%;
+    float: right;
+    width: 80%;
 }
 
 div .install-package {
-   float:left;
+    float: left;
 }
 
 .navbar-brand {
-    padding:0 0 0 15px;
+    padding: 0 0 0 15px;
 }
 
 .navbar-brand img {
-    height:50px;
+    height: 50px;
 }
- 
+
 .navbar-bottom-brand {
-    padding:0;
+    padding: 0;
 }
 
 .navbar-bottom-brand img {
-    height:50px;
+    height: 50px;
 }
 
 th {
