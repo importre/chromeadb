@@ -533,10 +533,8 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
         chrome.fileSystem.chooseEntry({'type': 'openFile'}, function (entry, fileEntries) {
             chrome.fileSystem.getDisplayPath(entry, function (displayPath) {
                 $scope.pushFile($scope.devInfo.serial, entry, displayPath);
-//                 $scope.installPackage($scope.devInfo.serial, displayPath);
             });
         });
-//         /Users/kabucey/Programs/android-sdks/tools/apps/SdkController/bin/SdkControllerApp.apk
     }
 
     $scope.loadHeapInfoOfApp = function (serial, process) {
