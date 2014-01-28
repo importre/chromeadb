@@ -349,6 +349,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                     $scope.logMessage.res = "Done";
                 }
                 $scope.loadPackages(serial);
+                $scope.removeApkFile(serial, packagePath);
             });
     }
 
@@ -376,6 +377,15 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                     $scope.logMessage.res = "Done";
                 }
                 $scope.loadPackages(serial);
+            });
+    }
+
+    $scope.removeApkFile = function (serial, packagePath) {
+        var cmd1 = "host:transport:" + serial;
+        var cmd2 = "shell:rm -rf " + packagePath;
+
+        $scope.getReadAllPromise(cmd1, cmd2)
+            .then(function (param) {
             });
     }
 
