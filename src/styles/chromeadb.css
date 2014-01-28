@@ -56,6 +56,10 @@ div .install-package {
     height: 50px;
 }
 
+.navbar-bottom-brand a:hover {
+    text-decoration: none;
+}
+
 th {
     text-align: center;
 }
