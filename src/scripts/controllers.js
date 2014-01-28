@@ -77,7 +77,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                 return socketService.read(param.createInfo, 4);
             });
     }
-    
+
     $scope.getByteCommandPromise = function (cmd, createInfo) {
         return socketService.writeBytes(createInfo, cmd)
             .then(function (param) {
@@ -221,18 +221,18 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                 $scope.logMessage.res = param.data.trim();
             });
     }
-    
+
     $scope.pushFile = function (serial, fileEntry, filePath) {
-        fileEntry.file(function(file) {
+        fileEntry.file(function (file) {
             var reader = new FileReader();
-            reader.onerror = function(e) {
+            reader.onerror = function (e) {
                 $scope.logMessage = {
                     cmd: "File Error",
                     res: e.target.error.message
                 };
                 $scope.$apply();
             };
-            reader.onloadend = function(e) {
+            reader.onloadend = function (e) {
                 if (!e.target.error) {
                     $scope.pushFileCommands(e, serial, filePath);
                 }
@@ -240,7 +240,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
             reader.readAsArrayBuffer(file);
         });
     }
-    
+
     $scope.pushFileCommands = function (e, serial, filePath) {
         var fileName = filePath.replace(/^.*[\\\/]/, '');
         var cmd1 = "host:transport:" + serial;
@@ -248,7 +248,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
         var sendCmd1 = "SEND";
         var packagePath = "/data/local/tmp/" + fileName;
         var sendCmd3 = packagePath + ",33206";
-        var sendCmd2 = integerToArrayBuffer(sendCmd3.length) ;
+        var sendCmd2 = integerToArrayBuffer(sendCmd3.length);
         var dataCmd1 = "DATA";
         var doneCmd = "DONE";
 
@@ -285,8 +285,8 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                     if (i + maxChunkSize > file.byteLength) {
                         chunkSize = file.byteLength - i;
                     }
-                    
-                    var chunkFunc = function(i, chunkSize) {
+
+                    var chunkFunc = function (i, chunkSize) {
                         var fileSlice = file.slice(i, i + chunkSize);
                         promise = promise.then(function (param) {
                             return socketService.write(param.createInfo, dataCmd1);
@@ -301,7 +301,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                     };
                     chunkFunc(i, chunkSize);
                 }
-                
+
                 promise.then(function (param) {
                     return socketService.write(param.createInfo, doneCmd);
                 })
@@ -311,11 +311,11 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                 .then(function (param) {
                     $scope.installPackage(serial, packagePath);
                 });
-                
+
                 defer.resolve(param);
-                
+
                 return promise;
-            })            
+            })
             .catch(function (param) {
                 $scope.initVariables();
                 $scope.logMessage = {
@@ -324,7 +324,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                 };
             });
     }
-    
+
     /**
      * Installs a package.
      *
@@ -518,14 +518,14 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
             $scope.tempPkgCmd = null;
         }
     }
-    
+
     $scope.chooseAndInstallPackage = function () {
-        chrome.fileSystem.chooseEntry({'type':'openFile'}, function (entry, fileEntries) {
+        chrome.fileSystem.chooseEntry({'type': 'openFile'}, function (entry, fileEntries) {
             chrome.fileSystem.getDisplayPath(entry, function (displayPath) {
                 $scope.pushFile($scope.devInfo.serial, entry, displayPath);
 //                 $scope.installPackage($scope.devInfo.serial, displayPath);
             });
-        }); 
+        });
 //         /Users/kabucey/Programs/android-sdks/tools/apps/SdkController/bin/SdkControllerApp.apk
     }
 
