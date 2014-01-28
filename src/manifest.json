@@ -6,7 +6,7 @@
             ]
         }
     },
-    "description": "BrickSimple Chrome ADB (Android Debug Bridge) Client",
+    "description": "Chrome ADB (Android Debug Bridge) Client",
     "icons": {
         "128": "assets/icon_128.png",
         "16": "assets/icon_016.png",
@@ -14,7 +14,7 @@
     },
     "manifest_version": 2,
     "minimum_chrome_version": "24",
-    "name": "BrickSimple Chrome ADB",
+    "name": "ChromeADB",
     "permissions": [
         "fileSystem",
         {
