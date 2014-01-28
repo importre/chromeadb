@@ -335,7 +335,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
      */
     $scope.installPackage = function (serial, packagePath) {
         var cmd1 = "host:transport:" + serial;
-        var cmd2 = "shell:pm install " + packagePath;
+        var cmd2 = "shell:pm install -r " + packagePath;
 
         $scope.logMessage = {
             cmd: "Install Package",
