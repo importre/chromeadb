@@ -211,3 +211,17 @@ function parseDiskSpace(data) {
     }
     return {head: head, body: body};
 }
+
+function parseResolution(data) {
+    var re = /init=(\d+)x(\d+)/g
+    var res = re.exec(data);
+    if (res == null) {
+        re = /mDisplayWidth=(\d+)\s+mDisplayHeight=(\d+)/g
+        res = re.exec(data);
+        if (res == null) {
+            return null;
+        }
+    }
+    return {width: res[1], height: res[2]};
+}
+
