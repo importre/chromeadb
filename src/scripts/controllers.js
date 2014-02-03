@@ -715,6 +715,14 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
 
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
+                if (param && param.data) {
+                    if (param.data.indexOf("--user") >= 0) {
+                        cmd2 = cmd2.replace("--user 0 ", "");
+                        $scope.getReadAllPromise(cmd1, cmd2)
+                            .then(function (param) {
+                            });
+                    }
+                }
             });
     }
 
