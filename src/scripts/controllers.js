@@ -657,7 +657,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
         var y = event.offsetY * $scope.scaleOfMousePad;
 
         var cmd1 = "host:transport:" + serial;
-        var cmd2 = "shell:input tap " + x + " " + y;
+        var cmd2 = "shell:input touchscreen tap " + x + " " + y;
 
         var x1 = $scope.mouseDownX;
         var y1 = $scope.mouseDownY;
@@ -666,7 +666,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
             var dist = Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
             // console.log("dist : " + dist);
             if (dist > 30) {
-                cmd2 = "shell:input swipe " + [x1, y1, x, y, $scope.swipeDuration].join(" ")
+                cmd2 = "shell:input touchscreen swipe " + [x1, y1, x, y, $scope.swipeDuration].join(" ")
                 console.log(cmd2);
             }
         }
