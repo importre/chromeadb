@@ -39,6 +39,9 @@ Pre-requirements
 - ADB included in [Android SDK][1]
 - Start ADB daemon
 	- `$ adb start-server`
+- ChromeADB for Android (Optional)
+	-  for Mousepad
+	- Go to [PlayStore][chromeadb_for_android]
 
 
 
@@ -78,3 +81,5 @@ BrickSimple Public License 1.0 (Based on the Mozilla Public License Version 2.0)
 [2]: https://chrome.google.com/webstore/detail/chrome-adb/fhdoijgfljahinnpbolfdimpcfoicmnm "chrome store"
 [3]: https://github.com/android/platform_system_core/blob/master/adb/OVERVIEW.TXT "adb overview"
 [4]: https://github.com/android/platform_system_core/blob/master/adb/SERVICES.TXT "adb services"
+
+[chromeadb_for_android]: https://play.google.com/store/apps/details?id=io.github.importre.android.chromeadb

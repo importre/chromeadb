@@ -4,7 +4,7 @@
 
 var adb = angular.module("chromeADB");
 
-adb.controller("controller", ["$scope", "$q", "socketService", function ($scope, $q, socketService) {
+adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function ($scope, $q, socketService, $sce) {
     $scope.host = "127.0.0.1";
     $scope.port = 5037;
     $scope.numOfXAxis = 15;
@@ -42,6 +42,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
         $scope.memInfo = null;
         $scope.diskSpace = null;
         $scope.logMessage = null;
+        $scope.mousepadEnabled = false;
         $scope.clearIntervalOfHeapInfo();
     }
 
@@ -95,7 +96,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
             })
             .then(function (param) {
                 // console.log(param);
-                if (param.data == "OKAY") {
+                if (param && param.data == "OKAY") {
                     return socketService.readAll(param.createInfo, arrayBufferToString);
                 }
             })
@@ -177,7 +178,9 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
 
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
-                $scope.packages = parsePackageList(param.data);
+                if (param) {
+                    $scope.packages = parsePackageList(param.data);
+                }
             });
     }
 
@@ -437,12 +440,14 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
 
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
-                var lines = parseProcessList(param.data);
-                var body = lines.splice(1);
-                var head = lines[0];
-                $scope.processList = {
-                    head: head,
-                    processes: body
+                if (param) {
+                    var lines = parseProcessList(param.data);
+                    var body = lines.splice(1);
+                    var head = lines[0];
+                    $scope.processList = {
+                        head: head,
+                        processes: body
+                    }
                 }
             });
     }
@@ -465,12 +470,14 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
 
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
-                if (!procName) {
-                    var data = parseMemInfo(param.data);
-                    $scope.memInfo = data;
-                } else {
-                    var data = parsePackageMemInfo(param.data);
-                    drawHeapGraph(data);
+                if (param) {
+                    if (!procName) {
+                        var data = parseMemInfo(param.data);
+                        $scope.memInfo = data;
+                    } else {
+                        var data = parsePackageMemInfo(param.data);
+                        drawHeapGraph(data);
+                    }
                 }
             });
     }
@@ -488,7 +495,9 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
 
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
-                $scope.diskSpace = parseDiskSpace(param.data);
+                if (param) {
+                    $scope.diskSpace = parseDiskSpace(param.data);
+                }
             });
     }
 
@@ -575,6 +584,181 @@ adb.controller("controller", ["$scope", "$q", "socketService", function ($scope,
                 ]
             });
         }
+    }
+
+    $scope.scaleOfMousePad = 2;
+    $scope.mouseDownX = -1;
+    $scope.mouseDownY = -1;
+    $scope.swipeDuration = 100;
+    $scope.packageName = "io.github.importre.android.chromeadb";
+    $scope.eventFilePath = "/sdcard/chromeadb.event";
+
+    /**
+     * Sets mouse pad size.
+     *
+     * Shows mousepad if parsed window size and chromeadb apk is installed.
+     *
+     * @param serial
+     */
+    $scope.initMousePad = function (serial) {
+        var cmd1 = "host:transport:" + serial;
+
+        $scope.mousepadMsg = "Checking...";
+        $scope.getReadAllPromise(cmd1, "shell:pm list packages")
+            .then(function (param) {
+                if (!param) {
+                    // not connected
+                    $scope.mousepadMsg = "";
+                } else if (param.data.indexOf($scope.packageName) >= 0) {
+                    // connected
+                    var cmd2 = "shell:dumpsys window";
+                    $scope.getReadAllPromise(cmd1, cmd2)
+                        .then(function (param) {
+                            var size = parseResolution(param.data);
+                            if (size != null) {
+                                $scope.mousepadEnabled = true;
+                                $scope.devResolution = {
+                                    width: (size.width / $scope.scaleOfMousePad) + "px",
+                                    height: (size.height / $scope.scaleOfMousePad) + "px"
+                                };
+
+                                if ($scope.scaleOfMousePad >= 4) {
+                                    $("#mousepad-size-group label:last").click();
+                                } else {
+                                    $("#mousepad-size-group label:first").click();
+                                }
+                            } else {
+                                // failed to parse `dumpsys windows`
+                                $scope.mousepadEnabled = false;
+                                var title = "feedback mousepad";
+
+                                $scope.getReadAllPromise(cmd1, "shell:input")
+                                    .then(function(param) {
+                                        body += "\n\n\n" + param.data;
+                                        $scope.mousepadMsg = "Error: " + $scope.getFeedbackTag(title, body);
+                                    });
+                            }
+                        });
+                } else {
+                    // apk is not installed.
+                    $scope.mousepadEnabled = false;
+                    $scope.mousepadMsg = $scope.packageName;
+                }
+            });
+    }
+
+    $scope.mouseDown = function (event) {
+        $scope.mouseDownX = event.offsetX * $scope.scaleOfMousePad;
+        $scope.mouseDownY = event.offsetY * $scope.scaleOfMousePad;
+    }
+
+    $scope.mouseUp = function (serial, event) {
+        var x = event.offsetX * $scope.scaleOfMousePad;
+        var y = event.offsetY * $scope.scaleOfMousePad;
+
+        var cmd1 = "host:transport:" + serial;
+        var cmd2 = "shell:input touchscreen tap " + x + " " + y;
+
+        var x1 = $scope.mouseDownX;
+        var y1 = $scope.mouseDownY;
+
+        if (x1 >= 0 && y1 >= 0) {
+            var dist = Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
+            // console.log("dist : " + dist);
+            if (dist > 30) {
+                cmd2 = "shell:input touchscreen swipe " + [x1, y1, x, y, $scope.swipeDuration].join(" ")
+                console.log(cmd2);
+            }
+        }
+
+        $scope.mouseDownX = -1;
+        $scope.mouseDownY = -1;
+
+        $scope.getReadAllPromise(cmd1, cmd2)
+            .then(function (param) {
+                if (param && param.data) {
+                    $scope.logMessage = {
+                        cmd: "MousePad",
+                        res: param.data.split("\n")[0]
+                    };
+                }
+            });
+    }
+
+    $scope.mouseMove = function (serial, event) {
+        var x = event.offsetX * $scope.scaleOfMousePad;
+        var y = event.offsetY * $scope.scaleOfMousePad;
+
+        $scope.mouseMoveLog = "coord: (" + x + ", " + y + ")";
+
+        if ($scope.coords == null) {
+            $scope.coords = [];
+        }
+
+        $scope.coords.push(x);
+        $scope.coords.push(y);
+
+        if ($scope.coords.length > 2) {
+            var cmd1 = "host:transport:" + serial;
+            var cmd2 = "shell: echo move " + $scope.coords.join(",") + " >> " + $scope.eventFilePath;
+
+            $scope.getReadAllPromise(cmd1, cmd2)
+                .then(function (param) {
+                });
+            $scope.coords = [];
+        }
+    }
+
+    $scope.mouseEnter = function (serial) {
+        var cmd1 = "host:transport:" + serial;
+        var cmd2 = "shell:am startservice --user 0 -n " + $scope.packageName + "/.ChromeAdbService";
+
+        $scope.getReadAllPromise(cmd1, cmd2)
+            .then(function (param) {
+                if (param && param.data) {
+                    if (param.data.indexOf("--user") >= 0) {
+                        cmd2 = cmd2.replace("--user 0 ", "");
+                        $scope.getReadAllPromise(cmd1, cmd2)
+                            .then(function (param) {
+                            });
+                    }
+                }
+            });
+    }
+
+    $scope.mouseLeave = function (serial) {
+        var cmd1 = "host:transport:" + serial;
+        var cmd2 = "shell:rm -r " + $scope.eventFilePath;
+
+        $scope.getReadAllPromise(cmd1, cmd2)
+            .then(function (param) {
+                cmd2 = "shell:am stopservice -n " + $scope.packageName + "/.ChromeAdbService";
+
+                $scope.getReadAllPromise(cmd1, cmd2)
+                    .then(function (param) {
+                    });
+            });
+    }
+
+    $scope.rotateMousePad = function () {
+        $scope.devResolution = {
+            width: $scope.devResolution.height,
+            height: $scope.devResolution.width
+        };
+    }
+
+    $scope.setMousePadSize = function (serial, scale) {
+        $scope.scaleOfMousePad = scale;
+        $scope.initMousePad(serial);
+    }
+
+    $scope.getFeedbackTag = function (title, body) {
+        title = "[ChromeADB] " + title;
+        body = encodeURIComponent(body);
+
+        var to = "chromeadb@gmail.com";
+        var mailto = $sce.trustAsHtml("mailto:" + to + "?subject=" + title + "&body=" + body);
+        return "<a href='" + mailto + "' target='_blank'>Send feedback</a>";
     }
 }]);
 

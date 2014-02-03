@@ -1,17 +1,20 @@
 <!--controller tab-->
 
 <div class="tab-pane" id="controller">
-    <form ng-submit="sendText(devInfo.serial, text);">
-        <div class="input-group">
-            <input type="text" class="form-control"
-                   placeholder="Send a string to the EditBox (in English)" ng-model="text"
-                   ng-submit="sendText(devInfo.serial, text);">
+
+<div class="row">
+    <div class="col-md-12">
+        <form ng-submit="sendText(devInfo.serial, text);">
+            <div class="input-group">
+                <input type="text" class="form-control"
+                       placeholder="Send a string to the EditBox (in English)" ng-model="text"
+                       ng-submit="sendText(devInfo.serial, text);">
             <span class="input-group-btn"> <button class="btn btn-success"><span
                     class="glyphicon glyphicon-send"></span></button> </span>
-        </div>
-    </form>
-
-    <hr/>
+            </div>
+        </form>
+        <hr/>
+    </div>
 
     <div class="col-md-6">
         <div class="panel panel-primary">
@@ -179,4 +182,39 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Mouse Pad</div>
+            <div class="panel-body" ng-hide="mousepadEnabled == false">
+                <div class="btn-group" data-toggle="buttons" id="mousepad-size-group">
+                    <label class="btn btn-default" ng-click="setMousePadSize(devInfo.serial, 2);">
+                        <input type="radio" name="options" id="option2">Large
+                    </label>
+                    <label class="btn btn-default" ng-click="setMousePadSize(devInfo.serial, 4);">
+                        <input type="radio" name="options" id="option1">Small
+                    </label>
+                </div>
+                <button class="btn btn-default"
+                        style="width: 100px;"
+                        ng-click="rotateMousePad(devInfo.serial);">
+                    <span class="glyphicon glyphicon-refresh"> Rotate</span>
+                </button>
+                <hr/>
+                <div id="mousepad"
+                     ng-style="devResolution"
+                     ng-mousedown="mouseDown($event);"
+                     ng-mouseup="mouseUp(devInfo.serial, $event);"
+                     ng-mousemove="mouseMove(devInfo.serial, $event);"
+                     ng-mouseenter="mouseEnter(devInfo.serial);"
+                     ng-mouseleave="mouseLeave(devInfo.serial);">
+                    {{ mouseMoveLog }}
+                </div>
+            </div>
+            <div class="panel-body" ng-hide="mousepadEnabled == true" ng-bind-html="mousepadMsg"/>
+        </div>
+    </div>
+</div>
 </div>

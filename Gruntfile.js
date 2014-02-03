@@ -53,6 +53,7 @@ module.exports = function (grunt) {
                             "src/bower_components/jquery/jquery.min.js",
                             "src/bower_components/angular/angular.min.js",
                             "src/bower_components/angular-route/angular-route.min.js",
+                            "src/bower_components/angular-sanitize/angular-sanitize.min.js",
                             "src/bower_components/jqplot/jquery.jqplot.min.css",
                             "src/bower_components/jqplot/jquery.jqplot.min.js",
                             "src/bower_components/jqplot/plugins/jqplot.canvasTextRenderer.min.js",
