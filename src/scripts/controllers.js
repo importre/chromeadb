@@ -711,7 +711,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
 
     $scope.mouseEnter = function (serial) {
         var cmd1 = "host:transport:" + serial;
-        var cmd2 = "shell:am startservice -n " + $scope.packageName + "/.ChromeAdbService";
+        var cmd2 = "shell:am startservice --user 0 -n " + $scope.packageName + "/.ChromeAdbService";
 
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
