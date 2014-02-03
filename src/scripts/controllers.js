@@ -642,7 +642,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
                 } else {
                     // apk is not installed.
                     $scope.mousepadEnabled = false;
-                    $scope.mousepadMsg = $scope.packageName;
+                    $scope.mousepadMsg = "<a href=\"https://play.google.com/store/apps/details?id=io.github.importre.android.chromeadb\" target=\"_blank\">Install ChromeADB for Android</a>"
                 }
             });
     }
