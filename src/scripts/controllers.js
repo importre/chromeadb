@@ -691,7 +691,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
             var dist = Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
             // console.log("dist : " + dist);
             if (dist > 30) {
-                cmd2 = "shell:input touchscreen swipe " + [x1, y1, x, y, $scope.swipeDuration].join(" ")
+                cmd2 = "shell:input touchscreen swipe " + [x1, y1, x, y].join(" ")
                 console.log(cmd2);
             }
         }
@@ -715,7 +715,9 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
                         cmd2 = cmd2.replace("touchscreen ", "");
                         $scope.getReadAllPromise(cmd1, cmd2)
                             .then(function (param) {
-                                $scope.logMessage = getLogMessage(param.data);
+                                if (param && param.data)  {
+                                    $scope.logMessage = getLogMessage(param.data);
+                                }
                             });
                     } else {
                         $scope.logMessage = getLogMessage(param.data);
