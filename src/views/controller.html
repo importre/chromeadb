@@ -213,7 +213,14 @@
                     {{ mouseMoveLog }}
                 </div>
             </div>
-            <div class="panel-body" ng-hide="mousepadEnabled == true" ng-bind-html="mousepadMsg"/>
+            <div class="panel-body" ng-hide="mousepadEnabled == true" ng-bind-html="mousepadMsg"></div>
+            <div class="panel-body" ng-hide="mousepadEnabled == true || notInstalledApk == false">
+                <button class="btn btn-default"
+                        style="width: 200px;"
+                        ng-click="sendIntentApk(devInfo.serial);">
+                    ChromeADB for Android
+                </button>
+            </div>
         </div>
     </div>
 </div>

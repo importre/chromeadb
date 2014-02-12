@@ -43,6 +43,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
         $scope.diskSpace = null;
         $scope.logMessage = null;
         $scope.mousepadEnabled = false;
+        $scope.notInstalledApk = false;
         $scope.clearIntervalOfHeapInfo();
     }
 
@@ -602,8 +603,11 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
      */
     $scope.initMousePad = function (serial) {
         var cmd1 = "host:transport:" + serial;
-
+        $scope.logMessage = null;
+        $scope.mousepadEnabled = false;
+        $scope.notInstalledApk = false;
         $scope.mousepadMsg = "Checking...";
+
         $scope.getReadAllPromise(cmd1, "shell:pm list packages")
             .then(function (param) {
                 if (!param) {
@@ -617,6 +621,7 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
                             var size = parseResolution(param.data);
                             if (size != null) {
                                 $scope.mousepadEnabled = true;
+                                $scope.notInstalledApk = true;
                                 $scope.devResolution = {
                                     width: (size.width / $scope.scaleOfMousePad) + "px",
                                     height: (size.height / $scope.scaleOfMousePad) + "px"
@@ -641,9 +646,29 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
                         });
                 } else {
                     // apk is not installed.
-                    $scope.mousepadEnabled = false;
-                    $scope.mousepadMsg = "<a href=\"https://play.google.com/store/apps/details?id=io.github.importre.android.chromeadb\" target=\"_blank\">Install ChromeADB for Android</a>"
+                    $scope.notInstalledApk = true;
+                    $scope.mousepadMsg = "Install ChromeADB for Android";
                 }
+            });
+    }
+
+    /**
+     * TODO: Sends Intent
+     *
+     * @param serial
+     */
+    $scope.sendIntentApk = function (serial) {
+        var act = "android.intent.action.VIEW";
+        // var uri = "http://play.google.com/store/apps/details?id=io.github.importre.android.chromeadb";
+        var uri = "market://details?id=io.github.importre.android.chromeadb";
+        var cmd1 = "host:transport:" + serial;
+        var cmd2 = "shell:am start -a " + act + " -d " + uri;
+        $scope.getReadAllPromise(cmd1, cmd2)
+            .then(function (param) {
+                $scope.logMessage = {
+                    cmd: "PlayStore",
+                    res: "See your device and Install ChromeADB for Android"
+                };
             });
     }
 
@@ -674,13 +699,27 @@ adb.controller("controller", ["$scope", "$q", "socketService", "$sce", function 
         $scope.mouseDownX = -1;
         $scope.mouseDownY = -1;
 
+        var getLogMessage = function (data) {
+            return {
+                cmd: "MousePad",
+                res: data.split("\n")[0]
+            };
+        }
+
         $scope.getReadAllPromise(cmd1, cmd2)
             .then(function (param) {
                 if (param && param.data) {
-                    $scope.logMessage = {
-                        cmd: "MousePad",
-                        res: param.data.split("\n")[0]
-                    };
+                    var errMsg = param.data.split("\n")[0].toLowerCase();
+                    if (errMsg.indexOf("error") >= 0 || errMsg.indexOf("unknown command") >= 0) {
+                        // remove touchscreen command and retry tab or swipe command
+                        cmd2 = cmd2.replace("touchscreen ", "");
+                        $scope.getReadAllPromise(cmd1, cmd2)
+                            .then(function (param) {
+                                $scope.logMessage = getLogMessage(param.data);
+                            });
+                    } else {
+                        $scope.logMessage = getLogMessage(param.data);
+                    }
                 }
             });
     }
