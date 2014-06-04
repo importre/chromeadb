@@ -2,7 +2,7 @@
   'use strict';
   var timeoutDelay = 500;
 
-  if (typeof chrome != 'undefined' && typeof chrome != 'object') {
+  if (typeof chrome !== 'undefined' && typeof chrome !== 'object') {
     window.chrome = {};
   }
 
@@ -11,7 +11,7 @@
   }
 
   chrome.runtime.getURL = function (url) {
-      return url;
+    return url;
   };
 
   chrome.socket = {
@@ -29,7 +29,7 @@
       }, timeoutDelay);
     },
     destroy: function (socketId) {
-//      console.log(socketId);
+      console.log(socketId);
     },
     connect: function (socketId, hostname, port, callback) {
       var result = 1;
