@@ -3,9 +3,9 @@
         "importre"
     ],
     "dependencies": {
-        "angular": "1.2.10",
-        "angular-route": "1.2.10",
-        "angular-sanitize": "1.2.10",
+        "angular": "~1.2.16",
+        "angular-route": "~1.2.16",
+        "angular-sanitize": "~1.2.16",
         "bootstrap": "~3.0.2",
         "jqplot": "*"
     },
