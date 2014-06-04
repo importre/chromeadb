@@ -1,5 +1,6 @@
 module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
+    require('time-grunt')(grunt);
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -18,6 +19,54 @@ module.exports = function (grunt) {
                 ]
             }
         },
+
+       watch: {
+         js: {
+           files: ['Gruntfile.js', 'src/scripts/{,*/}*.js'],
+           options: {
+             livereload: true
+           }
+         },
+         views : {
+           files: ['src/index.html', 'src/views/{,*/}*.html'],
+           options: {
+             livereload: true
+           }
+         },
+         styles: {
+           files: ['src/styles/{,*/}*.css'],
+           tasks: [],
+           options: {
+             livereload: true
+           }
+         },
+         livereload: {
+           options: {
+             livereload: '<%= connect.options.livereload %>'
+           },
+           files: [
+             'src/views/**/*.html',
+             'src/assets/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+             'src/manifest.json'
+           ]
+         }
+       },
+
+       connect: {
+         options: {
+           port: 9000,
+           livereload: 35729,
+           hostname: 'localhost',
+           open: true
+         },
+         chrome: {
+           options: {
+             base: ['src']
+           }
+         }
+       },
+
+
 
         clean: {
             dist: {
@@ -39,6 +88,7 @@ module.exports = function (grunt) {
                         dest: 'dist/',
                         src: [
                             "src/manifest.json",
+                            "src/index.html",
                             "src/scripts/*",
                             "src/styles/*",
                             "src/assets/*",
@@ -72,6 +122,19 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'build:dist'
     ]);
+
+    grunt.registerTask('debug', function (platform) {
+      var watch = grunt.config('watch');
+      platform = platform || 'chrome';
+
+      // Configure updated watch task
+      grunt.config('watch', watch);
+
+      grunt.task.run([
+        'connect:' + platform,
+        'watch'
+      ]);
+    });
 
     grunt.registerTask('build:dist', [
         'clean:dist',
