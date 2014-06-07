@@ -1,25 +1,33 @@
-(function (chrome, window) {
-  'use strict';
-  var timeoutDelay = 500;
+'use strict';
+/* jshint unused:false */
 
-  if (typeof chrome !== 'undefined' && typeof chrome !== 'object') {
-    window.chrome = {};
-  }
+var timeoutDelay = 10;
+var curCmd;
+var cmdToResp;
 
+function initCmdToResp() {
+  cmdToResp = {
+    '000ehost:devices-l': ['OKAY', '005B',
+        '048233d1d151e3cc device usb:1A120000 product:aosp_mako ' +
+        'model:AOSP_on_Mako device:mako'],
+    '001fhost:transport:048233d1d151e3cc': ['OKAY'],
+    '0016shell:pm list packages': ['OKAY',
+      'package:com.android.settings\npackage:com.android.musicfx'],
+    '0015shell:dumpsys meminfo': ['OKAY', 'OKAY',
+        'Applications Memory Usage (kB):\n' +
+        'Uptime: 95848872 Realtime: 211090246\n\nTotal PSS by process:\n' +
+        '71959 kB: com.google.android.googlequicksearchbox (pid 892 / activities)\n' +
+        '71580 kB: com.android.chrome (pid 7876 / activities)']
+  };
+}
+
+function initChromeSocket(chrome) {
   if (chrome.socket) {
     return;
   }
 
-  chrome.runtime.getURL = function (url) {
-    return url;
-  };
-
   chrome.socket = {
     create: function (type, options, callback) {
-//      console.log('=create=======');
-//      console.log('type: ' + type);
-//      console.log('options: ' + JSON.stringify(options));
-//      console.log('==============');
       var createInfo = {
         'socketId': 10
       };
@@ -28,35 +36,40 @@
         callback(createInfo);
       }, timeoutDelay);
     },
+
     destroy: function (socketId) {
-      console.log(socketId);
     },
+
     connect: function (socketId, hostname, port, callback) {
       var result = 1;
       window.setTimeout(function () {
         callback(result);
       }, timeoutDelay);
     },
+
     read: function (socketId, bufferSize, callback) {
-//      console.log('=read======');
-//      console.log('bufferSize: ' + bufferSize);
-//      console.log('===========');
       window.setTimeout(function () {
-        stringToArrayBuffer('OKAY', function (bytes) {
+        var resp = cmdToResp[curCmd];
+        if (resp) {
+          resp = cmdToResp[curCmd].splice(0, 1)[0];
+        }
+        if (typeof resp === 'undefined') {
+          initCmdToResp();
+        }
+        stringToArrayBuffer(resp, function (bytes) {
           var readInfo = {
-            'resultCode': 1,
+            'resultCode': resp ? 1 : 0,
             'data': bytes
           };
           callback(readInfo);
         });
       }, timeoutDelay);
     },
+
     write: function (socketId, data, callback) {
-//      console.log('=write=====');
-//      console.log('data: ', data);
-//      console.log('===========');
+      curCmd = data;
       var writeInfo = {
-        bytesWritten: data.byteLength
+        bytesWritten: data.length
       };
       window.setTimeout(function () {
         callback(writeInfo);
@@ -71,7 +84,28 @@
   window.stringToArrayBuffer = function (str, callback) {
     callback(str);
   };
+}
+
+function initChromeRuntime(chrome) {
+  if (!chrome.runtime) {
+    return;
+  }
+
+  if (!chrome.runtime.getURL) {
+    chrome.runtime.getURL = function (url) {
+      return url;
+    };
+  }
+}
+
+(function (chrome, window) {
+  if (typeof chrome !== 'undefined' && typeof chrome !== 'object') {
+    window.chrome = {};
+  }
+
+  initCmdToResp();
+  initChromeSocket(chrome);
+  initChromeRuntime(chrome);
 
   return chrome;
-
 }(chrome, window));

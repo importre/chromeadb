@@ -11,7 +11,11 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-contrib-connect": "^0.7.1",
     "time-grunt": "^0.3.2",
-    "grunt-contrib-jshint": "^0.10.0"
+    "grunt-contrib-jshint": "^0.10.0",
+    "karma": "^0.12.16",
+    "karma-jasmine": "^0.1.5",
+    "grunt-karma": "^0.8.3",
+    "karma-chrome-launcher": "^0.1.4"
   },
   "repository": {
     "type": "git",

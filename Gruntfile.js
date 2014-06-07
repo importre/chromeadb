@@ -61,7 +61,9 @@ module.exports = function (grunt) {
       },
       all: [
         'Gruntfile.js',
-        'src/scripts/**/*.js'
+        'karma.conf.js',
+        'src/scripts/**/*.js',
+        'test/**/*.js'
       ]
     },
 
@@ -79,7 +81,6 @@ module.exports = function (grunt) {
       }
     },
 
-
     clean: {
       dist: {
         files: [
@@ -88,6 +89,14 @@ module.exports = function (grunt) {
             src: ['dist/*', 'package/*.zip']
           }
         ]
+      }
+    },
+
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js',
+        singleRun: true,
+        browsers: ['Chrome']
       }
     },
 
@@ -148,5 +157,10 @@ module.exports = function (grunt) {
     'clean:dist',
     'copy:dist',
     'compress:dist'
+  ]);
+
+  grunt.registerTask('test', [
+    'jshint',
+    'karma'
   ]);
 };

@@ -38,6 +38,11 @@
     "getChartId": true,
     "integerToArrayBuffer": true,
     "angular": true,
+    "it": true,
+    "expect": true,
+    "describe": true,
+    "beforeEach": true,
+    "afterEach": true,
     "chrome": true
   }
 }

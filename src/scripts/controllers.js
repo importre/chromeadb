@@ -167,9 +167,6 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
     $scope.initDeviceData();
     $scope.devInfo = $scope.deviceInfoList[serial];
     $scope.loadPackages(serial);
-    $scope.loadProcessList(serial);
-    $scope.loadMemInfo(serial, null);
-    $scope.loadDiskSpace(serial);
 
     // show packages tab
     $(function () {
@@ -180,18 +177,24 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
   /**
    * Sets the package list to $scope.packages.
    *
-   * $ adb shell pm list package
+   * $ adb shell pm list packages
    *
    * @param serial A specific device.
    */
   $scope.loadPackages = function (serial) {
     var cmd1 = 'host:transport:' + serial;
-    var cmd2 = 'shell:pm list package';
+    var cmd2 = 'shell:pm list packages';
+
+    $scope.logMessage = {
+      cmd: 'Load packages',
+      res: 'Loading ...'
+    };
 
     $scope.getReadAllPromise(cmd1, cmd2)
       .then(function (param) {
         if (param) {
           $scope.packages = parsePackageList(param.data);
+          $scope.logMessage.res = 'Done';
         }
       });
   };
@@ -450,12 +453,19 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
     var cmd1 = 'host:transport:' + serial;
     var cmd2 = 'shell:ps';
 
+    $scope.logMessage = {
+      cmd: 'Load process list',
+      res: 'Loading ...'
+    };
+
     $scope.getReadAllPromise(cmd1, cmd2)
       .then(function (param) {
         if (param) {
           var lines = parseProcessList(param.data);
           var body = lines.splice(1);
           var head = lines[0];
+
+          $scope.logMessage.res = 'Done';
           $scope.processList = {
             head: head,
             processes: body
@@ -480,6 +490,11 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
       cmd2 += (' ' + procName);
     }
 
+    $scope.logMessage = {
+      cmd: 'Load memory info',
+      res: 'Loading ...'
+    };
+
     $scope.getReadAllPromise(cmd1, cmd2)
       .then(function (param) {
         if (param) {
@@ -487,6 +502,7 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
           if (!procName) {
             data = parseMemInfo(param.data);
             $scope.memInfo = data;
+            $scope.logMessage.res = 'Done';
           } else {
             data = parsePackageMemInfo(param.data);
             drawHeapGraph(data);
@@ -506,10 +522,16 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
     var cmd1 = 'host:transport:' + serial;
     var cmd2 = 'shell:df';
 
+    $scope.logMessage = {
+      cmd: 'Load disk space',
+      res: 'Loading ...'
+    };
+
     $scope.getReadAllPromise(cmd1, cmd2)
       .then(function (param) {
         if (param) {
           $scope.diskSpace = parseDiskSpace(param.data);
+          $scope.logMessage.res = 'Done';
         }
       });
   };
