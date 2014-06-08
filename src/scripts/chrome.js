@@ -98,9 +98,10 @@ function initChromeRuntime(chrome) {
   }
 }
 
-(function (chrome, window) {
-  if (typeof chrome !== 'undefined' && typeof chrome !== 'object') {
-    window.chrome = {};
+(function (window) {
+  var chrome = window.chrome;
+  if (typeof chrome === 'undefined' || typeof chrome !== 'object') {
+    chrome = window.chrome = {};
   }
 
   initCmdToResp();
@@ -108,4 +109,4 @@ function initChromeRuntime(chrome) {
   initChromeRuntime(chrome);
 
   return chrome;
-}(chrome, window));
+}(window));
