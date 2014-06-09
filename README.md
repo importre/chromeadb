@@ -1,6 +1,8 @@
 ChromeADB
 =========
 
+[![Build Status](https://travis-ci.org/importre/chromeadb.svg?branch=master)](https://travis-ci.org/importre/chromeadb)
+
 **ChromeADB** is a Chrome ADB (Android Debug Bridge) client.
 
 When launched, you can see all devices connected to your machine if the ADB connection is successful.  
@@ -56,7 +58,7 @@ No description needed anymore :)
 Chrome Store
 ------------
 
-[![chrome_store](https://developers.google.com/chrome/web-store/images/branding/ChromeWebStore_Badge_v2_340x96.png)][2]
+[![chrome_store](https://developer.chrome.com/webstore/images/ChromeWebStore_Badge_v2_496x150.png)][2]
 
 
 
