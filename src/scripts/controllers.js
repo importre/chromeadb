@@ -766,7 +766,7 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
 
     $scope.mouseMoveLog = 'coord: (' + x + ', ' + y + ')';
 
-    if ($scope.coords === null) {
+    if (!$scope.coords) {
       $scope.coords = [];
     }
 
