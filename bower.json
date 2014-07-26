@@ -3,11 +3,13 @@
     "importre"
   ],
   "dependencies": {
-    "angular": "~1.2.16",
-    "angular-route": "~1.2.16",
-    "angular-sanitize": "~1.2.16",
-    "bootstrap": "~3.0.2",
-    "jqplot": "*"
+    "angular": "~1.2.21",
+    "angular-route": "~1.2.21",
+    "angular-sanitize": "~1.2.21",
+    "bootstrap": "~3.2.0",
+    "jqplot": "*",
+    "angular-mocks": "~1.2.21",
+    "jquery": "~2.1.1"
   },
   "description": "Chrome ADB(Android Debug Bridge) Client",
   "homepage": "https://github.com/importre/chromeadb",
