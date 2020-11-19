@@ -31,12 +31,25 @@ tr > td.active {
     width: 150px !important;
 }
 
+.push-file-button {
+    width: 150px !important;
+}
+
 div .search-packages {
     float: right;
     width: 80%;
 }
 
+div .search-files {
+    float: right;
+    width: 80%;
+}
+
 div .install-package {
+    float: left;
+}
+
+div .push-file {
     float: left;
 }
 

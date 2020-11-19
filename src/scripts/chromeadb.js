@@ -14,6 +14,9 @@ adb.config(function ($routeProvider) {
     .when('/packages', {
       templateUrl: chrome.runtime.getURL('../views/packages.html')
     })
+    .when('/pushfile', {
+      templateUrl: chrome.runtime.getURL('../views/pushfile.html')
+    })
     .when('/controller', {
       templateUrl: chrome.runtime.getURL('../views/controller.html')
     })

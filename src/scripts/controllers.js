@@ -240,7 +240,26 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
       });
   };
 
-  $scope.pushFile = function (serial, fileEntry, filePath) {
+  $scope.pushFile = function (serial, fileEntry, filePath, targetPath) {
+    fileEntry.file(function (file) {
+      var reader = new FileReader();
+      reader.onerror = function (e) {
+        $scope.logMessage = {
+          cmd: 'File Error',
+          res: e.target.error.message
+        };
+        $scope.$apply();
+      };
+      reader.onloadend = function (e) {
+        if (!e.target.error) {
+          $scope.pushFileCommandsWithTargetPath(e, serial, filePath, targetPath);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  $scope.pushFileAndInstall = function (serial, fileEntry, filePath) {
     fileEntry.file(function (file) {
       var reader = new FileReader();
       reader.onerror = function (e) {
@@ -257,6 +276,92 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
       };
       reader.readAsArrayBuffer(file);
     });
+  };
+
+  $scope.pushFileCommandsWithTargetPath = function (e, serial, filePath, targetPath) {
+    var fileName = filePath.replace(/^.*[\\\/]/, '');
+    var cmd1 = 'host:transport:' + serial;
+    var cmd2 = 'sync:';
+    var sendCmd1 = 'SEND';
+    var targetFilePath = targetPath + '/' + fileName;
+    var sendCmd3 = targetFilePath + ',33206';
+    var sendCmd2 = integerToArrayBuffer(sendCmd3.length);
+    var dataCmd1 = 'DATA';
+    var doneCmd = 'DONE';
+
+    $scope.logMessage = {
+      cmd: 'Push File',
+      res: 'Pushing...'
+    };
+
+    $scope.getNewCommandPromise(cmd1)
+        .then(function (param) {
+          if (param.data === 'OKAY') {
+            return $scope.getCommandPromise(cmd2, param.createInfo);
+          }
+        })
+        .then(function (param) {
+          if (param.data === 'OKAY') {
+            return socketService.write(param.createInfo, sendCmd1);
+          }
+        })
+        .then(function (param) {
+          return socketService.writeBytes(param.createInfo, sendCmd2.buffer);
+        })
+        .then(function (param) {
+          return socketService.write(param.createInfo, sendCmd3);
+        })
+        .then(function (param) {
+          var defer = $q.defer();
+          var promise = defer.promise;
+          var file = e.target.result;
+          var maxChunkSize = 64 * 1024;
+          var chunkFunc = function (i, chunkSize) {
+            var fileSlice = file.slice(i, i + chunkSize);
+            promise = promise.then(function (param) {
+              return socketService.write(param.createInfo, dataCmd1);
+            })
+                .then(function (param) {
+                  var chunkSizeInBytes = integerToArrayBuffer(chunkSize);
+                  return socketService.writeBytes(param.createInfo, chunkSizeInBytes.buffer);
+                })
+                .then(function (param) {
+                  return socketService.writeBytes(param.createInfo, fileSlice);
+                });
+          };
+
+          for (var i = 0; i < file.byteLength; i += maxChunkSize) {
+            var chunkSize = maxChunkSize;
+            //check if on last chunk
+            if (i + maxChunkSize > file.byteLength) {
+              chunkSize = file.byteLength - i;
+            }
+            chunkFunc(i, chunkSize);
+          }
+
+          promise.then(function (param) {
+            return socketService.write(param.createInfo, doneCmd);
+          })
+              .then(function (param) {
+                return socketService.write(param.createInfo, integerToArrayBuffer(0));
+              });
+          defer.resolve(param);
+
+          return promise;
+        })
+        .then(() => {
+          $scope.logMessage = {
+            cmd: 'Push File',
+            res: `Push to ${targetFilePath} successfully.`
+          };
+        })
+        .catch(function (param) {
+          $scope.initVariables();
+          $scope.logMessage = {
+            cmd: 'Connection Error',
+            res: 'Cannot find any devices'
+          };
+        });
   };
 
   $scope.pushFileCommands = function (e, serial, filePath) {
@@ -576,7 +681,24 @@ adb.controller('controller', ['$scope', '$q', 'socketService', '$sce', function 
   $scope.chooseAndInstallPackage = function () {
     chrome.fileSystem.chooseEntry({'type': 'openFile'}, function (entry, fileEntries) {
       chrome.fileSystem.getDisplayPath(entry, function (displayPath) {
-        $scope.pushFile($scope.devInfo.serial, entry, displayPath);
+        $scope.pushFileAndInstall($scope.devInfo.serial, entry, displayPath);
+      });
+    });
+  };
+
+  $scope.chooseAndPushFile = function () {
+    const pushFilePath = document.getElementById('push-file-path').value;
+    console.log(pushFilePath);
+    if (pushFilePath === '') {
+      $scope.logMessage = {
+        cmd: 'Push File',
+        res: 'Please input a file path on the device.'
+      };
+      return;
+    }
+    chrome.fileSystem.chooseEntry({'type': 'openFile'}, function (entry, fileEntries) {
+      chrome.fileSystem.getDisplayPath(entry, function (displayPath) {
+        $scope.pushFile($scope.devInfo.serial, entry, displayPath, pushFilePath);
       });
     });
   };
