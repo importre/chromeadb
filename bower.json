@@ -7,7 +7,7 @@
     "angular-route": "~1.2.16",
     "angular-sanitize": "~1.2.16",
     "bootstrap": "~3.0.2",
-    "jqplot": "*"
+    "jqPlot": "*"
   },
   "description": "Chrome ADB(Android Debug Bridge) Client",
   "homepage": "https://github.com/importre/chromeadb",
