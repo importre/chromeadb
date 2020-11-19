@@ -14,7 +14,7 @@
     },
     "manifest_version": 2,
     "minimum_chrome_version": "24",
-    "name": "ChromeADB_kai",
+    "name": "ChromeADB",
     "permissions": [
         "fileSystem",
         {
